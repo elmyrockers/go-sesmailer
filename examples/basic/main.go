@@ -1,15 +1,23 @@
 package main
 
 import (
-	"log"
+	// "github.com/davecgh/go-spew/spew"
 
+	"context"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/elmyrockers/go-sesmailer"
 )
 
 func main() {
 	// Create mailer
-	sesmailer.New()
-
-
-	log.Println("Test runs")
+		sesmailer.New().
+			SetFrom( "no-reply@xeno.com.my", "Xeno System" ).
+			AddAddress( "elmyrockers@gmail.com", "Helmi Aziz" ).
+			SetSubject( "Test Subjek 7" ).
+			SetBody( "test sahaja body" ).
+			SetAltBody( "test sahaja alt body" ).
+			// SetDebug( 2 ).
+			Send( context.Background() )
 }
+
+
