@@ -59,24 +59,32 @@ func (m *Mail) SetFrom(email, name string) *Mail {
     return m
 }
 
-func (m *Mail) AddAddress(email string) *Mail {
-    m.To = append(m.To, email)
-    return m
+// helper to format "Name <email>" if name is given
+func formatAddress(email, name string) string {
+	if name != "" {
+		return fmt.Sprintf("\"%s\" <%s>", name, email)
+	}
+	return email
 }
 
-func (m *Mail) AddCC(email string) *Mail {
-    m.Cc = append(m.Cc, email)
-    return m
+func (m *Mail) AddAddress(email, name string) *Mail {
+	m.To = append(m.To, formatAddress(email, name))
+	return m
 }
 
-func (m *Mail) AddBCC(email string) *Mail {
-    m.Bcc = append(m.Bcc, email)
-    return m
+func (m *Mail) AddCC(email, name string) *Mail {
+	m.Cc = append(m.Cc, formatAddress(email, name))
+	return m
 }
 
-func (m *Mail) AddReplyTo(email string) *Mail {
-    m.ReplyTo = append(m.ReplyTo, email)
-    return m
+func (m *Mail) AddBCC(email, name string) *Mail {
+	m.Bcc = append(m.Bcc, formatAddress(email, name))
+	return m
+}
+
+func (m *Mail) AddReplyTo(email, name string) *Mail {
+	m.ReplyTo = append(m.ReplyTo, formatAddress(email, name))
+	return m
 }
 
 func (m *Mail) SetSubject(subject string) *Mail {
