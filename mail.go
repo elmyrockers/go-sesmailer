@@ -3,10 +3,14 @@ package sesmailer
 import (
 	"context"
 	"log"
+	"fmt"
+	"os"
 	// "github.com/davecgh/go-spew/spew"
-
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
+	"github.com/aws/aws-sdk-go-v2/service/ses/types"
+	"github.com/aws/smithy-go/logging"
 )
 
 type Mail struct {
@@ -43,6 +47,7 @@ func New() *Mail {
 			Cc:      []string{},
 			Bcc:     []string{},
 			ReplyTo: []string{},
+			ContentType: "text/plain",
 			Debug:   0,
 			client:  client,
 		}
@@ -89,11 +94,56 @@ func (m *Mail) SetAltBody(alt string) *Mail {
     return m
 }
 
+
+
+
+
+
+
 // Set debug level: 0 = none, 1 = errors only, 2 = verbose
+// SetDebug sets the debug level
 func (m *Mail) SetDebug(level int) *Mail {
-    m.Debug = level
-    return m
+	m.Debug = level
+
+	if level == 0 {
+		return m
+	}
+
+	ctx := context.Background()
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		log.Fatalf("unable to load AWS config: %v", err)
+	}
+
+	// Use smithy logger (required by AWS SDK v2)
+	cfg.Logger = logging.NewStandardLogger(os.Stderr)
+
+	if level == 1 {
+		// Minimal logging (retries/errors)
+		cfg.ClientLogMode = aws.LogRetries
+	}
+
+	if level >= 2 {
+		// Verbose logging (request + response)
+		cfg.ClientLogMode =
+			aws.LogRetries |
+				aws.LogRequest |
+				aws.LogResponse |
+				aws.LogRequestWithBody |
+				aws.LogResponseWithBody
+	}
+
+	// Recreate client with logging enabled
+	m.client = ses.NewFromConfig(cfg)
+
+	return m
 }
+
+
+
+
+
+
 
 func (m *Mail) IsHTML(isHtml bool) *Mail {
     if isHtml {
@@ -102,4 +152,90 @@ func (m *Mail) IsHTML(isHtml bool) *Mail {
         m.ContentType = "text/plain"
     }
     return m
+}
+
+
+// helper to get string pointer
+func awsString(s string) *string {
+	return &s
+}
+
+// Send sends the email using AWS SES
+func (m *Mail) Send(ctx context.Context) error {
+	// Prepare destination
+		destination := &types.Destination{
+			ToAddresses:  m.To,
+			CcAddresses:  m.Cc,
+			BccAddresses: m.Bcc,
+		}
+
+	// Prepare message body
+		var body *types.Body
+		if m.ContentType == "text/html" {
+			// HTML body (for future use)
+				body = &types.Body{
+					Html: &types.Content{
+						Data:    &m.Body,
+						Charset: awsString("UTF-8"),
+					},
+				}
+				if m.AltBody != "" {
+					// optional plain text fallback
+						body.Text = &types.Content{
+							Data:    &m.AltBody,
+							Charset: awsString("UTF-8"),
+						}
+				}
+		} else {
+			// Plain text only
+			body = &types.Body{
+				Text: &types.Content{
+					Data:    &m.Body,
+					Charset: awsString("UTF-8"),
+				},
+			}
+		}
+
+	// Prepare message
+		message := &types.Message{
+			Subject: &types.Content{
+				Data:    &m.Subject,
+				Charset: awsString("UTF-8"),
+			},
+			Body: body,
+		}
+
+	// Prepare SES input
+		from := m.From
+		if m.FromName != "" {
+			from = fmt.Sprintf("%s <%s>", m.FromName, m.From)
+		}
+
+		input := &ses.SendEmailInput{
+			Source:      &from,
+			Destination: destination,
+			Message:     message,
+		}
+
+	// Verbose logging before sending
+		if m.Debug >= 3 {
+			log.Println("[DEBUG] Preparing to send email")
+			log.Printf("[DEBUG] From: %s\nTo: %v\nCC: %v\nBCC: %v\n", m.From, m.To, m.Cc, m.Bcc)
+			log.Printf("[DEBUG] Subject: %s\nBody: %s\nAltBody: %s\nContentType: %s\n", m.Subject, m.Body, m.AltBody, m.ContentType)
+		}
+
+	// Send email
+		_, err := m.client.SendEmail(ctx, input)
+		if err != nil {
+			if m.Debug > 0 {
+				fmt.Printf("SES SendEmail error: %v\n", err)
+			}
+			return err
+		}
+
+		if m.Debug > 1 {
+			fmt.Println("Email sent successfully")
+		}
+
+	return nil
 }
