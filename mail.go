@@ -1,6 +1,10 @@
 package sesmailer
 
 import (
+	"context"
+	"log"
+
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 )
 
@@ -21,14 +25,25 @@ type Mail struct {
 
 
 
+// New initializes Mail and automatically creates SES client
 func New() *Mail {
-    return &Mail{
-        To:      []string{},
-        Cc:      []string{},
-        Bcc:     []string{},
-        ReplyTo: []string{},
-        Debug:   0, // 0 = none
-    }
+	ctx := context.Background()
+
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		log.Fatalf("unable to load AWS config: %v", err)
+	}
+
+	client := ses.NewFromConfig(cfg)
+
+	return &Mail{
+		To:      []string{},
+		Cc:      []string{},
+		Bcc:     []string{},
+		ReplyTo: []string{},
+		Debug:   0,
+		client:  client,
+	}
 }
 
 func (m *Mail) SetFrom(email, name string) *Mail {
