@@ -96,3 +96,21 @@ mail := sesmailer.New().
     SetDebug(2). // 0 = none, 1 = errors, 2 = verbose
 	Send()
 ```
+
+## API Reference
+
+| Method | Description |
+|------|-------------|
+| `New() *Mail` | Creates a new `Mail` instance and automatically initializes the AWS SES client using the default AWS configuration. |
+| `SetFrom(email string, name string) *Mail` | Sets the sender email address and optional display name. |
+| `AddAddress(email string, name string) *Mail` | Adds a recipient to the **To** list. |
+| `AddCC(email string, name string) *Mail` | Adds a recipient to the **CC** list. |
+| `AddBCC(email string, name string) *Mail` | Adds a recipient to the **BCC** list. |
+| `AddReplyTo(email string, name string) *Mail` | Adds an email address to the **Reply-To** header. |
+| `SetSubject(subject string) *Mail` | Sets the email subject line. |
+| `SetBody(body string) *Mail` | Sets the main email body content. |
+| `SetAltBody(alt string) *Mail` | Sets an alternative plain-text body when sending HTML emails. |
+| `IsHTML(isHtml bool) *Mail` | Sets whether the email content type should be `text/html` or `text/plain`. |
+| `SetDebug(level int) *Mail` | Enables debug logging. `0 = disabled`, `1 = errors/retries`, `2 = verbose request/response logs`. |
+| `Send() error` | Sends the email using a default background context. |
+| `SendContext(ctx context.Context) error` | Sends the email using a custom context. Useful for timeouts, cancellations, or request tracing. |
