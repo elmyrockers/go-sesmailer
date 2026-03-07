@@ -30,10 +30,21 @@ go get github.com/elmyrockers/go-sesmailer
 ```bash
 go get github.com/joho/godotenv
 ```
+> Your `.env` file should contain:
 ```env
 AWS_ACCESS_KEY_ID=your_access_key
 AWS_SECRET_ACCESS_KEY=your_secret_key
 AWS_REGION=us-east-1
+```
+> Then you can load it automatically in your code using the import:
+```go
+package main
+
+import (
+    _ "github.com/joho/godotenv/autoload"
+    "github.com/elmyrockers/go-sesmailer"
+)
+
 ```
 
 ## Usage
