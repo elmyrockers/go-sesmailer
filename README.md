@@ -86,3 +86,13 @@ mail := sesmailer.New().
 ```
 
 ***
+### Enabling Debug Logging
+```go
+mail := sesmailer.New().
+    SetFrom("no-reply@yourcompany.com", "Your Company").
+    AddAddress("helmi@xeno.com.my", "Helmi Aziz").
+    SetSubject("Debug Email").
+    SetBody("This email will show debug info").
+    SetDebug(2). // 0 = none, 1 = errors, 2 = verbose
+	Send()
+```
