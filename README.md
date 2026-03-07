@@ -134,3 +134,8 @@ mail := sesmailer.New().
 | `SetDebug(level int) *Mail` | Enables debug logging. `0 = disabled`, `1 = errors/retries`, `2 = verbose request/response logs`. |
 | `Send() error` | Sends the email using a default background context. |
 | `SendContext(ctx context.Context) error` | Sends the email using a custom context. Useful for timeouts, cancellations, or request tracing. |
+
+
+## License
+
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
