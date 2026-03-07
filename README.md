@@ -29,7 +29,7 @@ go get github.com/elmyrockers/go-sesmailer
 
 ## Usage
 
-### Basic Example
+### 1. Basic Example
 
 ```go
 package main
