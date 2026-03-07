@@ -54,3 +54,18 @@ func main() {
 }
 
 ```
+
+### Sending HTML Email with Plain Text Fallback
+```go
+mail := sesmailer.New().
+    SetFrom("no-reply@yourcompany.com", "Your Company").
+    AddAddress("helmi@xeno.com.my", "Helmi Aziz").
+    SetSubject("HTML Email Example").
+    SetBody("<h1>Hello</h1><p>This is an HTML email.</p>").
+    SetAltBody("Hello! This is a plain text version.").
+    IsHTML(true)
+
+if err := mail.Send(); err != nil {
+    log.Fatalf("Failed to send email: %v", err)
+}
+```
