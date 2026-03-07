@@ -8,14 +8,16 @@ go-sesmailer provides a simple and developer-friendly interface to send emails u
 
 ## Features
 
-- Add multiple recipients, CC, BCC, and Reply-To addresses
-- Send plain text or HTML emails
-- PHPMailer-style method chaining
-- Lightweight and minimal wrapper
-
-
-
-
+- **High performance** – built directly on top of the official AWS SDK for Go v2 and uses the native SES API with minimal abstraction overhead.
+- **PHPMailer-like API** – familiar interface for developers coming from PHP email libraries.
+- **Fluent method chaining** – clean and readable email construction.
+- **HTML and plain text email support**.
+- **Plain text fallback (`AltBody`)** for HTML emails.
+- **Multiple recipients support** – To, CC, and BCC.
+- **Reply-To header support**.
+- **Built-in debug logging** with multiple verbosity levels.
+- **Context support (`SendContext`)** for timeouts, cancellation, and request control.
+- **Automatic AWS configuration loading** from the default AWS environment.
 
 
 
