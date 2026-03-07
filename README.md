@@ -24,7 +24,7 @@ go-sesmailer provides a simple and developer-friendly interface to send emails u
 ```bash
 go get github.com/elmyrockers/go-sesmailer
 ```
-Make sure you have your AWS credentials set in the environment (AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY) or through your AWS config.
+> Make sure you have your AWS credentials set in the environment (**AWS_ACCESS_KEY_ID** and **AWS_SECRET_ACCESS_KEY**) or through your AWS config.
 
 ## Usage
 
@@ -34,21 +34,23 @@ Make sure you have your AWS credentials set in the environment (AWS_ACCESS_KEY_I
 package main
 
 import (
-	_ "github.com/joho/godotenv/autoload"
-	"github.com/elmyrockers/go-sesmailer"
+    "log"
+    "github.com/elmyrockers/go-sesmailer"
 )
 
 func main() {
-	// Create mailer
-		sesmailer.New().
-			SetFrom( "no-reply@xeno.com.my", "Xeno System" ).
-			AddAddress( "elmyrockers@gmail.com", "Helmi Aziz" ).
-			AddReplyTo( "elmyrockers2@gmail.com", "Helmi Aziz 2" ).
-			SetSubject( "Test subject" ).
-			SetBody( "test body" ).
-			SetAltBody( "test alt body" ).
-			SetDebug( 2 ).
-			Send()
+    mail := sesmailer.New().
+        SetFrom("no-reply@yourcompany.com", "Your Company").
+        AddAddress("helmi@xeno.com.my", "Helmi Aziz").
+        SetSubject("Test Email").
+        SetBody("Hello! This is a test email.").
+        IsHTML(false)
+
+    if err := mail.Send(); err != nil {
+        log.Fatalf("Failed to send email: %v", err)
+    }
+
+    log.Println("Email sent successfully")
 }
 
 ```
