@@ -164,7 +164,7 @@ func (m *Mail) IsHTML(isHtml bool) *Mail {
 
 
 
-// Send sends the email using AWS SES
+// SendContext sends the email using AWS SES
 func (m *Mail) SendContext(ctx context.Context) error {
 	// Prepare destination
 		destination := &types.Destination{
