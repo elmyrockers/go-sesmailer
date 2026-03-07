@@ -38,8 +38,6 @@ AWS_REGION=us-east-1
 ```
 > Then you can load it automatically in your code using the import:
 ```go
-package main
-
 import (
     _ "github.com/joho/godotenv/autoload"
     "github.com/elmyrockers/go-sesmailer"
@@ -55,8 +53,9 @@ import (
 package main
 
 import (
-    "log"
+	_ "github.com/joho/godotenv/autoload"
     "github.com/elmyrockers/go-sesmailer"
+    "log"
 )
 
 func main() {
