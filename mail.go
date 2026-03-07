@@ -210,21 +210,19 @@ func (m *Mail) SendContext(ctx context.Context) error {
 		}
 
 	// Prepare SES input
-		from := m.From
-		if m.FromName != "" {
-			from = fmt.Sprintf("%s <%s>", m.FromName, m.From)
-		}
+		from := formatAddress( m.From, m.FromName )
 
 		input := &ses.SendEmailInput{
 			Source:      &from,
-			Destination: destination,
+			Destination: destination, // To/Cc/Bcc
 			Message:     message,
+			ReplyToAddresses: m.ReplyTo,
 		}
 
 	// Verbose logging before sending
 		if m.Debug >= 1 {
 			log.Println("[DEBUG] Preparing to send email")
-			log.Printf("[DEBUG] From: %s\nTo: %v\nCC: %v\nBCC: %v\n", m.From, m.To, m.Cc, m.Bcc)
+			log.Printf("[DEBUG] From: %s\nReply-To: %v\nTo: %v\nCC: %v\nBCC: %v\n", m.From, m.ReplyTo, m.To, m.Cc, m.Bcc)
 			log.Printf("[DEBUG] Subject: %s\nBody: %s\nAltBody: %s\nContentType: %s\n\n", m.Subject, m.Body, m.AltBody, m.ContentType)
 		}
 
