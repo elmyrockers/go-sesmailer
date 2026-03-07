@@ -47,7 +47,7 @@ import (
 
 ## Usage
 
-### 1. Basic Example
+### 1. Basic Example:
 
 ```go
 package main
@@ -76,7 +76,7 @@ func main() {
 ```
 
 
-### 2. Sending HTML Email with Plain Text Fallback
+### 2. Sending HTML Email with Plain Text Fallback:
 ```go
 mail := sesmailer.New().
     SetFrom("no-reply@yourcompany.com", "Your Company").
@@ -92,7 +92,7 @@ if err := mail.Send(); err != nil {
 ```
 
 
-### 3. Adding CC, BCC, and Reply-To
+### 3. Adding CC, BCC, and Reply-To:
 ```go
 mail := sesmailer.New().
     SetFrom("no-reply@yourcompany.com", "Your Company").
@@ -106,7 +106,7 @@ mail := sesmailer.New().
 ```
 
 
-### 4. Enabling Debug Logging
+### 4. Enabling Debug Logging:
 ```go
 mail := sesmailer.New().
     SetFrom("no-reply@yourcompany.com", "Your Company").
