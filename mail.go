@@ -163,10 +163,6 @@ func (m *Mail) IsHTML(isHtml bool) *Mail {
 }
 
 
-// helper to get string pointer
-func awsString(s string) *string {
-	return &s
-}
 
 // Send sends the email using AWS SES
 func (m *Mail) Send(ctx context.Context) error {
@@ -184,14 +180,14 @@ func (m *Mail) Send(ctx context.Context) error {
 				body = &types.Body{
 					Html: &types.Content{
 						Data:    &m.Body,
-						Charset: awsString("UTF-8"),
+						Charset: aws.String("UTF-8"),
 					},
 				}
 				if m.AltBody != "" {
 					// optional plain text fallback
 						body.Text = &types.Content{
 							Data:    &m.AltBody,
-							Charset: awsString("UTF-8"),
+							Charset: aws.String("UTF-8"),
 						}
 				}
 		} else {
@@ -199,7 +195,7 @@ func (m *Mail) Send(ctx context.Context) error {
 			body = &types.Body{
 				Text: &types.Content{
 					Data:    &m.Body,
-					Charset: awsString("UTF-8"),
+					Charset: aws.String("UTF-8"),
 				},
 			}
 		}
@@ -208,7 +204,7 @@ func (m *Mail) Send(ctx context.Context) error {
 		message := &types.Message{
 			Subject: &types.Content{
 				Data:    &m.Subject,
-				Charset: awsString("UTF-8"),
+				Charset: aws.String("UTF-8"),
 			},
 			Body: body,
 		}
