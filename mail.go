@@ -226,23 +226,23 @@ func (m *Mail) Send(ctx context.Context) error {
 		}
 
 	// Verbose logging before sending
-		if m.Debug >= 3 {
+		if m.Debug >= 1 {
 			log.Println("[DEBUG] Preparing to send email")
 			log.Printf("[DEBUG] From: %s\nTo: %v\nCC: %v\nBCC: %v\n", m.From, m.To, m.Cc, m.Bcc)
-			log.Printf("[DEBUG] Subject: %s\nBody: %s\nAltBody: %s\nContentType: %s\n", m.Subject, m.Body, m.AltBody, m.ContentType)
+			log.Printf("[DEBUG] Subject: %s\nBody: %s\nAltBody: %s\nContentType: %s\n\n", m.Subject, m.Body, m.AltBody, m.ContentType)
 		}
 
 	// Send email
 		_, err := m.client.SendEmail(ctx, input)
 		if err != nil {
 			if m.Debug > 0 {
-				fmt.Printf("SES SendEmail error: %v\n", err)
+				fmt.Printf("\n\nSES SendEmail error: %v", err)
 			}
 			return err
 		}
 
-		if m.Debug > 1 {
-			fmt.Println("Email sent successfully")
+		if m.Debug > 0 {
+			fmt.Println("\n\nEmail sent successfully")
 		}
 
 	return nil
