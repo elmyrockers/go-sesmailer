@@ -24,7 +24,7 @@ go-sesmailer provides a simple and developer-friendly interface to send emails u
 ```bash
 go get github.com/elmyrockers/go-sesmailer
 ```
-> Make sure you have your AWS credentials set in the environment (**AWS_ACCESS_KEY_ID** and **AWS_SECRET_ACCESS_KEY**) or through your AWS config.
+> Make sure you have your AWS credentials set in the environment (***AWS_ACCESS_KEY_ID*** and ***AWS_SECRET_ACCESS_KEY***) or through your AWS config.
 
 ## Usage
 
@@ -55,6 +55,7 @@ func main() {
 
 ```
 
+***
 ### Sending HTML Email with Plain Text Fallback
 ```go
 mail := sesmailer.New().
@@ -69,6 +70,7 @@ if err := mail.Send(); err != nil {
     log.Fatalf("Failed to send email: %v", err)
 }
 ```
+
 
 ### Adding CC, BCC, and Reply-To
 ```go
