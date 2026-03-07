@@ -136,6 +136,10 @@ mail := sesmailer.New().
 | `SendContext(ctx context.Context) error` | Sends the email using a custom context. Useful for timeouts, cancellations, or request tracing. |
 
 
+
+
+
+
 ## License
 
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
