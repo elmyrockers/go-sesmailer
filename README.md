@@ -97,7 +97,7 @@ mail := sesmailer.New().
     SetDebug(2). // 0 = none, 1 = errors, 2 = verbose
 	Send()
 ```
-
+***
 ## API Reference
 
 | Method | Description |
