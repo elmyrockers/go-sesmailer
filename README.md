@@ -56,7 +56,7 @@ func main() {
 
 ```
 
-***
+
 ### Sending HTML Email with Plain Text Fallback
 ```go
 mail := sesmailer.New().
@@ -72,7 +72,7 @@ if err := mail.Send(); err != nil {
 }
 ```
 
-***
+
 ### Adding CC, BCC, and Reply-To
 ```go
 mail := sesmailer.New().
@@ -86,7 +86,7 @@ mail := sesmailer.New().
 	Send()
 ```
 
-***
+
 ### Enabling Debug Logging
 ```go
 mail := sesmailer.New().
