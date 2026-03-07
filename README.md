@@ -25,8 +25,8 @@ go-sesmailer provides a simple and developer-friendly interface to send emails u
 ```bash
 go get github.com/elmyrockers/go-sesmailer
 ```
-> - Make sure you have your AWS credentials set in the environment variables (***AWS_ACCESS_KEY_ID*** and ***AWS_SECRET_ACCESS_KEY***) or through your AWS config.
-> - During development, you can create a `.env` file next to your `main.go` and load it using the `joho/godotenv` library.
+> Make sure you have your AWS credentials set in the environment variables (***AWS_ACCESS_KEY_ID*** and ***AWS_SECRET_ACCESS_KEY***) or through your AWS config.
+> During development, you can create a `.env` file next to your `main.go` and load it using the `joho/godotenv` library.
 
 ## Usage
 
