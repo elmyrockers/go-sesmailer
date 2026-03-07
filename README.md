@@ -71,7 +71,7 @@ if err := mail.Send(); err != nil {
 }
 ```
 
-
+***
 ### Adding CC, BCC, and Reply-To
 ```go
 mail := sesmailer.New().
@@ -84,3 +84,5 @@ mail := sesmailer.New().
     SetBody("This email has CC, BCC, and Reply-To addresses.").
 	Send()
 ```
+
+***
