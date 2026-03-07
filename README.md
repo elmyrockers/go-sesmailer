@@ -69,3 +69,16 @@ if err := mail.Send(); err != nil {
     log.Fatalf("Failed to send email: %v", err)
 }
 ```
+
+### Adding CC, BCC, and Reply-To
+```go
+mail := sesmailer.New().
+    SetFrom("no-reply@yourcompany.com", "Your Company").
+    AddAddress("helmi@xeno.com.my", "Helmi Aziz").
+    AddCC("admin@yourcompany.com", "Administrator").
+    AddBCC("your-private-email@gmail.com", "").
+    AddReplyTo("admin@yourcompany.com", "Administrator").
+    SetSubject("Email with CC/BCC/ReplyTo").
+    SetBody("This email has CC, BCC, and Reply-To addresses.").
+	Send()
+```
