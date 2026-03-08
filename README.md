@@ -12,8 +12,11 @@ go-sesmailer provides a simple and developer-friendly interface to send emails u
 
 ## Features
 
+
 - **Lightweight and tiny wrapper** around Amazon SES.
 - Built on top of the **official AWS SDK for Go v2**.
+- Uses the **Amazon SES API** instead of SMTP, avoiding SMTP protocol overhead for better performance and faster delivery.
+- Provides **improved security** by using AWS IAM authentication instead of SMTP credentials.
 - **PHPMailer-like API** familiar to developers coming from **PHP and traditional email libraries**.
 - **Fluent method chaining** for clean and readable email construction.
 - Supports **HTML and plain text emails**.
