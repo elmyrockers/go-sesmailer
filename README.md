@@ -66,14 +66,15 @@ import (
 )
 
 func main() {
-    mail := sesmailer.New().
+    err := sesmailer.New().
         SetFrom("no-reply@yourcompany.com", "Your Company").
         AddAddress("helmi@xeno.com.my", "Helmi Aziz").
         SetSubject("Test Email").
         SetBody("Hello! This is a test email.").
-        IsHTML(false)
+        IsHTML(false).
+        Send()
 
-    if err := mail.Send(); err != nil {
+    if err != nil {
         log.Fatalf("Failed to send email: %v", err)
     }
 
@@ -85,15 +86,16 @@ func main() {
 
 ### 2. Sending HTML Email with Plain Text Fallback:
 ```go
-mail := sesmailer.New().
+err := sesmailer.New().
     SetFrom("no-reply@yourcompany.com", "Your Company").
     AddAddress("helmi@xeno.com.my", "Helmi Aziz").
     SetSubject("HTML Email Example").
     SetBody("<h1>Hello</h1><p>This is an HTML email.</p>").
     SetAltBody("Hello! This is a plain text version.").
-    IsHTML(true)
+    IsHTML(true).
+    Send()
 
-if err := mail.Send(); err != nil {
+if err != nil {
     log.Fatalf("Failed to send email: %v", err)
 }
 ```
@@ -101,7 +103,7 @@ if err := mail.Send(); err != nil {
 
 ### 3. Adding CC, BCC, and Reply-To:
 ```go
-mail := sesmailer.New().
+err := sesmailer.New().
     SetFrom("no-reply@yourcompany.com", "Your Company").
     AddAddress("helmi@xeno.com.my", "Helmi Aziz").
     AddCC("admin@yourcompany.com", "Administrator").
@@ -110,18 +112,26 @@ mail := sesmailer.New().
     SetSubject("Email with CC/BCC/ReplyTo").
     SetBody("This email has CC, BCC, and Reply-To addresses.").
 	Send()
+
+if err != nil {
+    log.Fatalf("Failed to send email: %v", err)
+}
 ```
 
 
 ### 4. Enabling Debug Logging:
 ```go
-mail := sesmailer.New().
+err := sesmailer.New().
     SetFrom("no-reply@yourcompany.com", "Your Company").
     AddAddress("helmi@xeno.com.my", "Helmi Aziz").
     SetSubject("Debug Email").
     SetBody("This email will show debug info").
     SetDebug(2). // 0 = none, 1 = errors, 2 = verbose
 	Send()
+	
+if err != nil {
+    log.Fatalf("Failed to send email: %v", err)
+}
 ```
 ***
 ## API Reference
