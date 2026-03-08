@@ -46,7 +46,7 @@ AWS_REGION=us-east-1
 > Then you can load it automatically in your code using the import:
 ```go
 import (
-    _ "github.com/joho/godotenv/autoload"
+    _ "github.com/joho/godotenv/autoload" //Load your .env file automatically
     "github.com/elmyrockers/go-sesmailer"
 )
 
@@ -128,7 +128,7 @@ err := sesmailer.New().
     SetBody("This email will show debug info").
     SetDebug(2). // 0 = none, 1 = errors, 2 = verbose
 	Send()
-	
+
 if err != nil {
     log.Fatalf("Failed to send email: %v", err)
 }
