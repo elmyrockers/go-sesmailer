@@ -13,7 +13,7 @@ import (
 	"github.com/aws/smithy-go/logging"
 )
 
-type Mail struct {
+type Mailer struct {
     From     string
     FromName string
     To       []string
@@ -31,8 +31,8 @@ type Mail struct {
 
 
 
-// New initializes Mail and automatically creates SES client
-func New() *Mail {
+// New initializes Mailer and automatically creates SES client
+func New() *Mailer {
 	// Load config
 		ctx := context.Background()
 		cfg, err := config.LoadDefaultConfig(ctx)
@@ -42,7 +42,7 @@ func New() *Mail {
 
 	// Create SES client
 		client := ses.NewFromConfig(cfg)
-		return &Mail{
+		return &Mailer{
 			To:      []string{},
 			Cc:      []string{},
 			Bcc:     []string{},
@@ -53,7 +53,7 @@ func New() *Mail {
 		}
 }
 
-func (m *Mail) SetFrom(email, name string) *Mail {
+func (m *Mailer) SetFrom(email, name string) *Mailer {
     m.From = email
     m.FromName = name
     return m
@@ -67,37 +67,37 @@ func formatAddress(email, name string) string {
 	return email
 }
 
-func (m *Mail) AddAddress(email, name string) *Mail {
+func (m *Mailer) AddAddress(email, name string) *Mailer {
 	m.To = append(m.To, formatAddress(email, name))
 	return m
 }
 
-func (m *Mail) AddCC(email, name string) *Mail {
+func (m *Mailer) AddCC(email, name string) *Mailer {
 	m.Cc = append(m.Cc, formatAddress(email, name))
 	return m
 }
 
-func (m *Mail) AddBCC(email, name string) *Mail {
+func (m *Mailer) AddBCC(email, name string) *Mailer {
 	m.Bcc = append(m.Bcc, formatAddress(email, name))
 	return m
 }
 
-func (m *Mail) AddReplyTo(email, name string) *Mail {
+func (m *Mailer) AddReplyTo(email, name string) *Mailer {
 	m.ReplyTo = append(m.ReplyTo, formatAddress(email, name))
 	return m
 }
 
-func (m *Mail) SetSubject(subject string) *Mail {
+func (m *Mailer) SetSubject(subject string) *Mailer {
     m.Subject = subject
     return m
 }
 
-func (m *Mail) SetBody(body string) *Mail {
+func (m *Mailer) SetBody(body string) *Mailer {
     m.Body = body
     return m
 }
 
-func (m *Mail) SetAltBody(alt string) *Mail {
+func (m *Mailer) SetAltBody(alt string) *Mailer {
     m.AltBody = alt
     return m
 }
@@ -110,7 +110,7 @@ func (m *Mail) SetAltBody(alt string) *Mail {
 
 // Set debug level: 0 = none, 1 = errors only, 2 = verbose
 // SetDebug sets the debug level
-func (m *Mail) SetDebug(level int) *Mail {
+func (m *Mailer) SetDebug(level int) *Mailer {
 	m.Debug = level
 
 	if level == 0 {
@@ -153,7 +153,7 @@ func (m *Mail) SetDebug(level int) *Mail {
 
 
 
-func (m *Mail) IsHTML(isHtml bool) *Mail {
+func (m *Mailer) IsHTML(isHtml bool) *Mailer {
     if isHtml {
         m.ContentType = "text/html"
     } else {
@@ -165,7 +165,7 @@ func (m *Mail) IsHTML(isHtml bool) *Mail {
 
 
 // SendContext sends the email using AWS SES
-func (m *Mail) SendContext(ctx context.Context) error {
+func (m *Mailer) SendContext(ctx context.Context) error {
 	// Prepare destination
 		destination := &types.Destination{
 			ToAddresses:  m.To,
@@ -242,7 +242,7 @@ func (m *Mail) SendContext(ctx context.Context) error {
 	return nil
 }
 
-func (m *Mail) Send() error {
+func (m *Mailer) Send() error {
 	ctx := context.Background()
 	return m.SendContext( ctx )
 }
