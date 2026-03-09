@@ -215,3 +215,49 @@ func TestMailer_SetBodyAndAltBody(t *testing.T) {
 		})
 	}
 }
+
+func TestMailer_IsHTML(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    bool
+		expected string
+	}{
+		{"html", true, "text/html"},
+		{"plain", false, "text/plain"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &Mailer{}
+			m.IsHTML(tt.input) //Set
+
+			//Check
+				if m.ContentType != tt.expected {
+					t.Errorf("expected %s but got %s", tt.expected, m.ContentType)
+				}
+		})
+	}
+}
+
+func TestMailer_SetDebug(t *testing.T) {
+	tests := []struct {
+		name  string
+		level int
+	}{
+		{"no debug", 0},
+		{"error debug", 1},
+		{"verbose debug", 2},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &Mailer{}
+			m.SetDebug(tt.level) //Set
+
+			//Check
+				if m.Debug != tt.level {
+					t.Errorf("expected debug %d but got %d", tt.level, m.Debug)
+				}
+		})
+	}
+}
