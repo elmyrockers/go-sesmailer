@@ -163,3 +163,55 @@ func TestMailer_AddReplyTo(t *testing.T) {
 		})
 	}
 }
+
+func TestMailer_SetSubject(t *testing.T) {
+	tests := []struct {
+		name    string
+		subject string
+	}{
+		{"simple subject", "Hello"},
+		{"long subject", "Welcome to our service"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &Mailer{}
+			m.SetSubject(tt.subject) //Set
+
+			//Check
+				if m.Subject != tt.subject {
+					t.Errorf("expected %s but got %s", tt.subject, m.Subject)
+				}
+		})
+	}
+}
+
+func TestMailer_SetBodyAndAltBody(t *testing.T) {
+	tests := []struct {
+		name string
+		body string
+		alt  string
+	}{
+		{"Body with alt", "<div><p>this is body with alt</p></div>", "this is body with alt"},
+		{"Body only", "this is body only", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &Mailer{}
+
+			//Set
+				m.SetBody(tt.body)
+				m.SetAltBody(tt.alt)
+
+			//Check
+				if m.Body != tt.body {
+					t.Errorf("expected body %s but got %s", tt.body, m.Body)
+				}
+
+				if m.AltBody != tt.alt {
+					t.Errorf("expected alt body %s but got %s", tt.alt, m.AltBody)
+				}
+		})
+	}
+}
