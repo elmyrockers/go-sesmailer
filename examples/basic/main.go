@@ -11,7 +11,7 @@ func main() {
 			SetFrom( "no-reply@xeno.com.my", "Xeno System" ).
 			AddAddress( "elmyrockers@gmail.com", "Helmi Aziz" ).
 			AddReplyTo( "elmyrockers2@gmail.com", "Helmi Aziz 2" ).
-			SetSubject( "Test subject" ).
+			SetSubject( "Test subject 20" ).
 			SetBody( "test body" ).
 			SetAltBody( "test alt body" ).
 			SetDebug( 2 ).
