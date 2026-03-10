@@ -1,4 +1,4 @@
-name: Go Tests
+name: Build / CI
 
 on:
   push:
