@@ -29,17 +29,24 @@ jobs:
     - name: Build
       run: go build ./...
 
-    # Run unit tests excluding examples/
-    - name: Run tests (excluding examples/)
+    # Run unit tests and generate coverage (excluding examples/)
+    - name: Run tests with coverage (excluding examples/)
       run: |
-        go list ./... | grep -v /examples | xargs go test -v
+        go list ./... | grep -v /examples | xargs go test -v -coverprofile=coverage.out
+
+    # Generate coverage badge
+    - name: Generate coverage badge
+      run: |
+        # Get total coverage %
+            COVERAGE=$(go tool cover -func=coverage.out | grep total: | awk '{print $3}' | sed 's/%//')
+        # Decide color
+            COLOR=brightgreen
+            if (( $(echo "$COVERAGE < 80" | bc -l) )); then COLOR=red; fi
+        # Generate badge using Shields.io
+            curl -s "https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}" > coverage.svg        
 
     # Lint the code for style and quality
     - name: Lint
       run: |
         go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
         golangci-lint run
-
-    # Generate test coverage
-    - name: Test with coverage
-      run: go test -coverprofile=coverage.out ./...
