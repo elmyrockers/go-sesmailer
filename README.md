@@ -3,7 +3,7 @@
 [![Go Version](https://img.shields.io/badge/go1.20+-00ADD8?logo=go&logoColor=white)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/elmyrockers/go-sesmailer)](https://github.com/elmyrockers/go-sesmailer/releases)
-![Go Tests](https://github.com/elmyrockers/go-sesmailer/actions/workflows/go-ci.yml/badge.svg)
+![Build / CI](https://github.com/elmyrockers/go-sesmailer/actions/workflows/go-ci.yml/badge.svg)
 
 ![AWS SES](/amazon-ses.jpg)
 
