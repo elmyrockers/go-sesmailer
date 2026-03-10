@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [ main ]
 
+# Give permission to commit (for coverage.svg)
 permissions:
   contents: write
 
@@ -48,14 +49,23 @@ jobs:
         # Generate badge using Shields.io
             curl -s "https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}" > coverage.svg
 
-    # Commit coverage badge
+    # Commit coverage badge 
     - name: Commit coverage badge
       run: |
+        # Configure Git for GitHub Actions
         git config --global user.name "github-actions"
         git config --global user.email "actions@github.com"
+
+        # Add the coverage badge
         git add coverage.svg
-        git commit -m "Update coverage badge [skip ci]" || echo "No changes"
-        git push
+        
+        # Only commit if there are changes
+        if ! git diff --cached --quiet; then
+            git commit -m "Changes detected, update coverage badge"
+            git push
+        else
+            echo "No changes to commit"
+        fi
 
     # Lint the code for style and quality
     - name: Lint
