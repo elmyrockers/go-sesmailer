@@ -19,7 +19,7 @@ func TestFormatAddress(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := formatAddress(tt.email, tt.fullname) //set
-			if got != tt.expected { //check
+			if got != tt.expected {                     //check
 				t.Errorf("expected %s, got %s", tt.expected, got)
 			}
 		})
@@ -42,12 +42,12 @@ func TestMailer_SetFrom(t *testing.T) {
 			m.SetFrom(tt.email, tt.fullname) //set
 
 			//Check
-				if m.From != tt.email {
-					t.Errorf("expected From %s but got %s", tt.email, m.From)
-				}
-				if m.FromName != tt.fullname {
-					t.Errorf("expected FromName %s but got %s", tt.fullname, m.FromName)
-				}
+			if m.From != tt.email {
+				t.Errorf("expected From %s but got %s", tt.email, m.From)
+			}
+			if m.FromName != tt.fullname {
+				t.Errorf("expected FromName %s but got %s", tt.fullname, m.FromName)
+			}
 		})
 	}
 }
@@ -69,13 +69,13 @@ func TestMailer_AddAddress(t *testing.T) {
 			m.AddAddress(tt.email, tt.fullname) //set
 
 			//Check
-				if len(m.To) != 1 {
-					t.Fatalf("expected 1 address but got %d", len(m.To))
-				}
+			if len(m.To) != 1 {
+				t.Fatalf("expected 1 address but got %d", len(m.To))
+			}
 
-				if m.To[0] != tt.expected {
-					t.Errorf("expected %s but got %s", tt.expected, m.To[0])
-				}
+			if m.To[0] != tt.expected {
+				t.Errorf("expected %s but got %s", tt.expected, m.To[0])
+			}
 		})
 	}
 }
@@ -97,13 +97,13 @@ func TestMailer_AddCC(t *testing.T) {
 			m.AddCC(tt.email, tt.fullname) //set
 
 			//Check
-				if len(m.Cc) != 1 {
-					t.Fatalf("expected 1 address but got %d", len(m.Cc))
-				}
+			if len(m.Cc) != 1 {
+				t.Fatalf("expected 1 address but got %d", len(m.Cc))
+			}
 
-				if m.Cc[0] != tt.expected {
-					t.Errorf("expected %s but got %s", tt.expected, m.Cc[0])
-				}
+			if m.Cc[0] != tt.expected {
+				t.Errorf("expected %s but got %s", tt.expected, m.Cc[0])
+			}
 		})
 	}
 }
@@ -125,13 +125,13 @@ func TestMailer_AddBCC(t *testing.T) {
 			m.AddBCC(tt.email, tt.fullname) //set
 
 			//Check
-				if len(m.Bcc) != 1 {
-					t.Fatalf("expected 1 address but got %d", len(m.Bcc))
-				}
+			if len(m.Bcc) != 1 {
+				t.Fatalf("expected 1 address but got %d", len(m.Bcc))
+			}
 
-				if m.Bcc[0] != tt.expected {
-					t.Errorf("expected %s but got %s", tt.expected, m.Bcc[0])
-				}
+			if m.Bcc[0] != tt.expected {
+				t.Errorf("expected %s but got %s", tt.expected, m.Bcc[0])
+			}
 		})
 	}
 }
@@ -153,13 +153,13 @@ func TestMailer_AddReplyTo(t *testing.T) {
 			m.AddReplyTo(tt.email, tt.fullname) //set
 
 			//Check
-				if len(m.ReplyTo) != 1 {
-					t.Fatalf("expected 1 address but got %d", len(m.ReplyTo))
-				}
+			if len(m.ReplyTo) != 1 {
+				t.Fatalf("expected 1 address but got %d", len(m.ReplyTo))
+			}
 
-				if m.ReplyTo[0] != tt.expected {
-					t.Errorf("expected %s but got %s", tt.expected, m.ReplyTo[0])
-				}
+			if m.ReplyTo[0] != tt.expected {
+				t.Errorf("expected %s but got %s", tt.expected, m.ReplyTo[0])
+			}
 		})
 	}
 }
@@ -179,9 +179,9 @@ func TestMailer_SetSubject(t *testing.T) {
 			m.SetSubject(tt.subject) //Set
 
 			//Check
-				if m.Subject != tt.subject {
-					t.Errorf("expected %s but got %s", tt.subject, m.Subject)
-				}
+			if m.Subject != tt.subject {
+				t.Errorf("expected %s but got %s", tt.subject, m.Subject)
+			}
 		})
 	}
 }
@@ -201,17 +201,17 @@ func TestMailer_SetBodyAndAltBody(t *testing.T) {
 			m := &Mailer{}
 
 			//Set
-				m.SetBody(tt.body)
-				m.SetAltBody(tt.alt)
+			m.SetBody(tt.body)
+			m.SetAltBody(tt.alt)
 
 			//Check
-				if m.Body != tt.body {
-					t.Errorf("expected body %s but got %s", tt.body, m.Body)
-				}
+			if m.Body != tt.body {
+				t.Errorf("expected body %s but got %s", tt.body, m.Body)
+			}
 
-				if m.AltBody != tt.alt {
-					t.Errorf("expected alt body %s but got %s", tt.alt, m.AltBody)
-				}
+			if m.AltBody != tt.alt {
+				t.Errorf("expected alt body %s but got %s", tt.alt, m.AltBody)
+			}
 		})
 	}
 }
@@ -232,9 +232,9 @@ func TestMailer_IsHTML(t *testing.T) {
 			m.IsHTML(tt.input) //Set
 
 			//Check
-				if m.ContentType != tt.expected {
-					t.Errorf("expected %s but got %s", tt.expected, m.ContentType)
-				}
+			if m.ContentType != tt.expected {
+				t.Errorf("expected %s but got %s", tt.expected, m.ContentType)
+			}
 		})
 	}
 }
@@ -255,9 +255,9 @@ func TestMailer_SetDebug(t *testing.T) {
 			m.SetDebug(tt.level) //Set
 
 			//Check
-				if m.Debug != tt.level {
-					t.Errorf("expected debug %d but got %d", tt.level, m.Debug)
-				}
+			if m.Debug != tt.level {
+				t.Errorf("expected debug %d but got %d", tt.level, m.Debug)
+			}
 		})
 	}
 }
