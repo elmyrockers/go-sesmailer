@@ -22,5 +22,6 @@ jobs:
     - name: Install dependencies
       run: go mod tidy
 
-    - name: Run tests
-      run: go test -v .
+    - name: Run tests (excluding examples/)
+      run: |
+        go list ./... | grep -v /examples | xargs go test -v
