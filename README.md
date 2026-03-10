@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/elmyrockers/go-sesmailer)](https://github.com/elmyrockers/go-sesmailer/releases)
 ![Build / CI](https://github.com/elmyrockers/go-sesmailer/actions/workflows/go-ci.yml/badge.svg)
-
+![Coverage](coverage.svg)
 ![AWS SES](/amazon-ses.jpg)
 
 Minimal wrapper around the AWS SES SDK for Go to simplify sending emails with a PHPMailer-like API.
