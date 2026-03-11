@@ -11,6 +11,11 @@ import (
 )
 
 func TestIntegration_New(t *testing.T) {
+	// Skipping test in short mode
+	    if testing.Short() {
+	        t.Skip("Skipping this test in short mode")
+	    }
+
 	// Load AWS config manually, like New() would
 			ctx := context.Background()
 			cfg, err := config.LoadDefaultConfig(ctx)
