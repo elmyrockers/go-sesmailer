@@ -74,7 +74,7 @@ func TestIntegration_SendContext(t *testing.T) {
 		SetSubject("Integration Test SendContext()").
 		SetBody("This is a test email from SendContext() integration test").
 		IsHTML(false).
-		SetDebug(2)
+		SetDebug(1)
 
 	ctx := context.Background()
 	err := mailer.SendContext(ctx)
@@ -95,7 +95,7 @@ func TestIntegration_Send(t *testing.T) {
 		SetSubject("Integration Test Send()").
 		SetBody("This is a test email from Send() integration test").
 		IsHTML(false).
-		SetDebug(2).
+		SetDebug(1).
 		Send()
 
 	if err != nil {
