@@ -40,6 +40,14 @@ jobs:
     - name: Run unit tests only (excluding examples/)
       run: go list ./... | grep -v /examples | xargs go test -v -short
 
+    - name: Check secret length
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+      run: |
+        echo "Length of AWS key: ${#AWS_ACCESS_KEY_ID}"
+
     # Run all tests (unit + integration) and generate coverage (excluding examples/)
     - name: Run all tests (unit + integration) with coverage (excluding examples/)
       env:
