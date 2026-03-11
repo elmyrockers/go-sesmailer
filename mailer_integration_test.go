@@ -89,7 +89,7 @@ func TestIntegration_Send(t *testing.T) {
 		t.Skip("Skipping integration test in short mode")
 	}
 
-	error := New().
+	err := New().
 		SetFrom("no-reply@xeno.com.my", "Xeno System").
 		AddAddress("elmyrockers@gmail.com", "Helmi Aziz").
 		SetSubject("Integration Test Send()").
