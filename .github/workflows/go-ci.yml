@@ -37,17 +37,45 @@ jobs:
       run: go build ./...
 
     # Run unit tests (excluding examples/)
-    - name: Run unit tests only (excluding examples/)
-      run: go list ./... | grep -v /examples | xargs go test -v -short
+    - name: Run unit tests with coverage
+      run: |
+        go test -v -short -coverprofile=unit.out $(go list ./... | grep -v /examples)
 
-    # Run all tests (unit + integration) and generate coverage (excluding examples/)
-    - name: Run all tests (unit + integration) with coverage (excluding examples/)
+    # Run integration tests (excluding examples/)
+    - name: Run integration tests with coverage
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
       run: |
-        go list ./... | grep -v /examples | xargs go test -v -coverprofile=coverage.out
+        go test -v -run Integration -coverprofile=integration.out $(go list ./... | grep -v /examples)
+
+    # Merge coverage (unit.out + integration.out = coverage.out)
+    - name: Merge coverage
+      run: |
+        echo "mode: set" > coverage.out
+        tail -n +2 unit.out >> coverage.out
+        tail -n +2 integration.out >> coverage.out
+
+    # Generate HTML coverage report
+    - name: Generate HTML coverage report
+      run: |
+        go tool cover -html=coverage.out -o coverage.html
+
+    - name: Upload coverage HTML if changed
+      if: ${{ steps.coverage-html.outputs.changed == 'true' }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: coverage.html
+
+    - id: coverage-html
+      run: |
+        if [ -f coverage.html ] && [ -s coverage.html ]; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
 
     # Generate coverage badge
     - name: Generate coverage badge
