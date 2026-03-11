@@ -46,7 +46,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
       run: |
-        echo "Length of AWS key: ${#AWS_ACCESS_KEY_ID}"
+        echo "Length of AWS key: ${#AWS_REGION}"
 
     # Run all tests (unit + integration) and generate coverage (excluding examples/)
     - name: Run all tests (unit + integration) with coverage (excluding examples/)
