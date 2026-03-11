@@ -36,10 +36,9 @@ jobs:
     - name: Build
       run: go build ./...
 
-    # Run unit test (excluding examples/)
-    - name: Run unit test only (excluding examples/)
-      run: |
-        go list ./... | grep -v /examples | xargs -n1 -I{} sh -c 'go test -v -short $(find {} -name "*_test.go" ! -name "*integration*_test.go" -printf "%h\n" | sort -u)'
+    # Run unit tests (excluding examples/)
+    - name: Run unit tests only (excluding examples/)
+      run: go list ./... | grep -v /examples | xargs go test -v -short
 
     # Run all tests (unit + integration) and generate coverage (excluding examples/)
     - name: Run all tests (unit + integration) with coverage (excluding examples/)
