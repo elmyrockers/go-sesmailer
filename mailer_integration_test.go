@@ -60,3 +60,45 @@ func TestIntegration_New(t *testing.T) {
 				t.Errorf("expected empty slices; got To:%v Cc:%v Bcc:%v ReplyTo:%v", m.To, m.Cc, m.Bcc, m.ReplyTo)
 			}
 }
+
+
+// TestIntegration_SendContext tests sending email with SendContext
+func TestIntegration_SendContext(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
+	mailer := New().
+		SetFrom("no-reply@xeno.com.my", "Xeno System").
+		AddAddress("elmyrockers@gmail.com", "Helmi Aziz").
+		SetSubject("Integration Test SendContext()").
+		SetBody("This is a test email from SendContext() integration test").
+		IsHTML(false).
+		SetDebug(2)
+
+	ctx := context.Background()
+	err := mailer.SendContext(ctx)
+	if err != nil {
+		t.Fatalf("SendContext() failed: %v", err)
+	}
+}
+
+// TestIntegration_Send tests sending email with Send (default background context)
+func TestIntegration_Send(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
+	error := New().
+		SetFrom("no-reply@xeno.com.my", "Xeno System").
+		AddAddress("elmyrockers@gmail.com", "Helmi Aziz").
+		SetSubject("Integration Test Send()").
+		SetBody("This is a test email from Send() integration test").
+		IsHTML(false).
+		SetDebug(2).
+		Send()
+
+	if err != nil {
+		t.Fatalf("Send() failed: %v", err)
+	}
+}
