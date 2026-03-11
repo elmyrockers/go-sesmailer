@@ -36,14 +36,17 @@ jobs:
     - name: Build
       run: go build ./...
 
-    # Run unit tests and generate coverage (excluding examples/)
-    - name: Run tests with coverage (excluding examples/)
+    # Run all tests (unit + integration) and generate coverage (excluding examples/)
+    - name: Run all tests with coverage (excluding examples/)
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
       run: |
-        go list ./... | grep -v /examples | xargs go test -v -coverprofile=coverage.out
+        # Run unit test first
+            go test -v -short $(go list ./... | grep -v /examples)
+        # Then run integration test
+            go list ./... | grep -v /examples | xargs go test -v -coverprofile=coverage.out
 
     # Generate coverage badge
     - name: Generate coverage badge
