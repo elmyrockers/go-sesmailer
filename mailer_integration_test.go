@@ -105,6 +105,10 @@ func TestIntegration_Send(t *testing.T) {
 }
 
 func TestSend_NoRecipient(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
     err := New().
 		SetFrom("no-reply@xeno.com.my", "").
 		SetSubject("Test").
