@@ -62,6 +62,8 @@ jobs:
       run: |
         go tool cover -html=coverage.out -o coverage.html
 
+    # Check if HTML coverage exists
+    - name: Check if coverage HTML exists
     - id: coverage-html
       run: |
         if [ -f coverage.html ] && [ -s coverage.html ]; then
@@ -70,6 +72,7 @@ jobs:
           echo "changed=false" >> $GITHUB_OUTPUT
         fi
 
+    # Upload coverage HTML if changed
     - name: Upload coverage HTML if changed
       if: ${{ steps.coverage-html.outputs.changed == 'true' }}
       uses: actions/upload-artifact@v4
