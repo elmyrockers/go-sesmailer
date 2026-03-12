@@ -64,7 +64,7 @@ jobs:
 
     # Check if HTML coverage exists
     - name: Check if coverage HTML exists
-    - id: coverage-html
+      id: coverage-html
       run: |
         if [ -f coverage.html ] && [ -s coverage.html ]; then
           echo "changed=true" >> $GITHUB_OUTPUT
