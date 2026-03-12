@@ -45,7 +45,7 @@ jobs:
     # Run unit tests (excluding examples/)
     - name: Run unit tests with coverage
       run: |
-        go test -v -short -coverprofile=unit.out $(go list ./... | grep -v /examples)
+        go test -tags=unit -coverprofile=unit.out ./...
 
     # Run integration tests (excluding examples/)
     - name: Run integration tests with coverage
@@ -55,7 +55,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
       run: |
-        go test -v -run Integration -coverprofile=integration.out $(go list ./... | grep -v /examples)
+        go test -tags=integration -coverprofile=integration.out ./...
 
     # Merge coverage (unit.out + integration.out = coverage.out)
     - name: Merge coverage
