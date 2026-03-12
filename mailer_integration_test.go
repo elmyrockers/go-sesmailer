@@ -104,7 +104,7 @@ func TestIntegration_Send(t *testing.T) {
 	}
 }
 
-func TestSend_NoRecipient(t *testing.T) {
+func TestIntegration_Send_NoRecipient(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
