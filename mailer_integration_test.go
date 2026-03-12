@@ -103,3 +103,15 @@ func TestIntegration_Send(t *testing.T) {
 		t.Fatalf("Send() failed: %v", err)
 	}
 }
+
+func TestSend_NoRecipient(t *testing.T) {
+    err := New().
+		SetFrom("no-reply@xeno.com.my", "").
+		SetSubject("Test").
+		SetBody("Test body").
+		Send()
+
+    if err == nil {
+        t.Fatal("expected error but got nil")
+    }
+}
