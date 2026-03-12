@@ -59,6 +59,7 @@ jobs:
 
     # Merge coverage (unit.out + integration.out = coverage.out)
     - name: Merge coverage
+      if: ${{ github.event.inputs.run_integration == 'true' }}
       run: |
         echo "mode: set" > coverage.out
         tail -n +2 unit.out >> coverage.out
@@ -66,11 +67,13 @@ jobs:
 
     # Generate HTML coverage report
     - name: Generate HTML coverage report
+      if: ${{ github.event.inputs.run_integration == 'true' }}
       run: |
         go tool cover -html=coverage.out -o coverage.html
 
     # Check if HTML coverage exists
     - name: Check if coverage HTML exists
+      if: ${{ github.event.inputs.run_integration == 'true' }}
       id: coverage-html
       run: |
         if [ -f coverage.html ] && [ -s coverage.html ]; then
@@ -81,7 +84,7 @@ jobs:
 
     # Upload coverage HTML if changed
     - name: Upload coverage HTML if changed
-      if: ${{ steps.coverage-html.outputs.changed == 'true' }}
+      if: ${{ github.event.inputs.run_integration == 'true' && steps.coverage-html.outputs.changed == 'true' }}
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
@@ -91,6 +94,7 @@ jobs:
 
     # Generate coverage badge
     - name: Generate coverage badge
+      if: ${{ github.event.inputs.run_integration == 'true' }}
       run: |
         # Get total coverage %
             COVERAGE=$(go tool cover -func=coverage.out | grep total: | awk '{print $3}' | sed 's/%//')
@@ -102,6 +106,7 @@ jobs:
 
     # Commit coverage badge 
     - name: Commit coverage badge
+      if: ${{ github.event.inputs.run_integration == 'true' }}
       run: |
         # Configure Git for GitHub Actions
         git config --global user.name "github-actions"
