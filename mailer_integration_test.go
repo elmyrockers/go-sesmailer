@@ -93,8 +93,9 @@ func TestIntegration_Send(t *testing.T) {
 		SetFrom("no-reply@xeno.com.my", "Xeno System").
 		AddAddress("elmyrockers@gmail.com", "Helmi Aziz").
 		SetSubject("Integration Test Send()").
-		SetBody("This is a test email from Send() integration test").
-		IsHTML(false).
+		SetBody("<p>This is a test email from Send() integration test</p>").
+		SetAltBody("This is a test email: Alt body").
+		IsHTML(true).
 		SetDebug(2).
 		Send()
 
