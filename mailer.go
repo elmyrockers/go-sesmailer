@@ -210,17 +210,30 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 
 				body += string(encoded) + "\r\n"
 			}
-
 		body += fmt.Sprintf("--%s--", boundary)
-	rawMessage := headers + body
 
-	input := &ses.SendRawEmailInput{
-		RawMessage: &types.RawMessage{
-			Data: []byte(rawMessage),
-		},
-	}
+
+	// Prepare input for SendRawEmail()
+		rawMessage := headers + body
+		input := &ses.SendRawEmailInput{
+			RawMessage: &types.RawMessage{
+				Data: []byte(rawMessage),
+			},
+		}
 
 	_, err := m.client.SendRawEmail(ctx, input)
+	if err != nil {
+		if m.Debug > 0 {
+			fmt.Printf("\n\nSES SendRawEmail error: %v", err)
+		}
+		return err
+	}
+
+	if m.Debug > 0 {
+		fmt.Println("\n\nEmail sent successfully")
+	}
+
+
 	return err
 }
 
