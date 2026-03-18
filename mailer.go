@@ -5,14 +5,24 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"encoding/base64"
+	"strings"
+	"path/filepath"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
 	"github.com/aws/smithy-go/logging"
+
+	// "github.com/davecgh/go-spew/spew"
 )
 
+
+type Attachment struct {
+	Filename string
+	Data     []byte
+}
 type Mailer struct {
 	From        string
 	FromName    string
@@ -24,6 +34,7 @@ type Mailer struct {
 	Body        string
 	AltBody     string
 	ContentType string //"text/plain" or "text/html"
+	Attachments []Attachment
 	Debug       int
 
 	client *ses.Client
@@ -148,8 +159,76 @@ func (m *Mailer) IsHTML(isHtml bool) *Mailer {
 	return m
 }
 
+func (m *Mailer) AddAttachment(path string, name string) *Mailer {
+	// Get binary data
+		data, err := os.ReadFile(path)
+		if err != nil {
+			log.Printf("failed to read attachment: %v", err)
+			return m
+		}
+
+	// Set filename
+		if name == "" { name = filepath.Base(path) }
+
+	m.Attachments = append(m.Attachments, Attachment{
+		Filename: name,
+		Data:     data,
+	})
+
+	return m
+}
+
+func (m *Mailer) SendRaw(ctx context.Context) error {
+	// Headers
+		boundary := "NextPartBoundary"
+		from := formatAddress(m.From, m.FromName)
+
+		headers := ""
+		headers += fmt.Sprintf("From: %s\r\n", from)
+		headers += fmt.Sprintf("To: %s\r\n", strings.Join(m.To, ","))
+		headers += fmt.Sprintf("Subject: %s\r\n", m.Subject)
+		headers += "MIME-Version: 1.0\r\n"
+		headers += fmt.Sprintf("Content-Type: multipart/mixed; boundary=\"%s\"\r\n", boundary)
+		headers += "\r\n"
+
+	// Main body part
+		body := ""
+		body += fmt.Sprintf("--%s\r\n", boundary)
+		body += fmt.Sprintf("Content-Type: %s; charset=\"UTF-8\"\r\n", m.ContentType)
+		body += "Content-Transfer-Encoding: 7bit\r\n\r\n"
+		body += m.Body + "\r\n"
+
+		// Attachments
+			for _, att := range m.Attachments {
+				body += fmt.Sprintf("--%s\r\n", boundary)
+				body += fmt.Sprintf("Content-Type: application/octet-stream; name=\"%s\"\r\n", att.Filename)
+				body += "Content-Transfer-Encoding: base64\r\n"
+				body += fmt.Sprintf("Content-Disposition: attachment; filename=\"%s\"\r\n\r\n", att.Filename)
+
+				encoded := make([]byte, base64.StdEncoding.EncodedLen(len(att.Data)))
+				base64.StdEncoding.Encode(encoded, att.Data)
+
+				body += string(encoded) + "\r\n"
+			}
+
+		body += fmt.Sprintf("--%s--", boundary)
+	rawMessage := headers + body
+
+	input := &ses.SendRawEmailInput{
+		RawMessage: &types.RawMessage{
+			Data: []byte(rawMessage),
+		},
+	}
+
+	_, err := m.client.SendRawEmail(ctx, input)
+	return err
+}
+
 // SendContext sends the email using AWS SES
 func (m *Mailer) SendContext(ctx context.Context) error {
+	// If there is an attachment, then send with raw email input
+		if len(m.Attachments) > 0 { return m.SendRaw( ctx ) }
+
 	// Prepare destination
 	destination := &types.Destination{
 		ToAddresses:  m.To,
