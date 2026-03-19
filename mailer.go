@@ -10,6 +10,10 @@ import (
 	"bytes"
 	"path/filepath"
 	"time"
+	"crypto/rand"
+	"net/mail"
+	"mime/quotedprintable"
+	"mime"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -27,7 +31,6 @@ type Attachment struct {
 }
 type Mailer struct {
 	From        string
-	FromName    string
 	To          []string
 	Cc          []string
 	Bcc         []string
@@ -64,42 +67,113 @@ func New() *Mailer {
 	}
 }
 
+
+//---------------------------------------------------------------------------------------------------- HELPERS
+func sanitizeHeader(s string) string {
+	s = strings.ReplaceAll(s, "\r", "")
+	s = strings.ReplaceAll(s, "\n", "")
+	s = strings.ReplaceAll(s, "\x00", "")
+	return strings.TrimSpace(s)
+}
+
+// Format address safely
+func formatAddress(email, name string) string {
+	email = strings.ToLower(email)
+	email = sanitizeHeader(email)
+	name = sanitizeHeader(name)
+	if _, err := mail.ParseAddress(email); err != nil {
+		return "" // invalid email, return empty
+	}
+	if name == "" {
+		return email
+	}
+	name = mime.QEncoding.Encode("utf-8", name)
+	return fmt.Sprintf("%s <%s>", name, email)
+}
+
+// Sanitize filenames
+func sanitizeFilename(name string) string {
+	name = sanitizeHeader(name)
+	return filepath.Base(name)
+}
+
+func generateBoundary() (string, error) {
+	b := make([]byte, 8) // 8 random bytes
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+	boundary := fmt.Sprintf("NextPartBoundary_%d_%x", time.Now().UnixNano(), b)
+	return boundary, nil
+}
+
+// wrapBase64 splits data into Base64 lines for email attachments
+func wrapBase64(data []byte) string {
+	encoded := base64.StdEncoding.EncodeToString(data)
+	var buf strings.Builder
+	for i := 0; i < len(encoded); i += 76 {
+		end := i + 76
+		if end > len(encoded) {
+			end = len(encoded)
+		}
+		buf.WriteString(encoded[i:end] + "\r\n")
+	}
+	return buf.String()
+}
+
+func encodeBodyQP(body string) string {
+	var buf bytes.Buffer
+	w := quotedprintable.NewWriter(&buf)
+	w.Write([]byte(body))
+	w.Close()
+	return buf.String()
+}
+//----------------------------------------------------------------------------------------------------
+
 func (m *Mailer) SetFrom(email, name string) *Mailer {
-	m.From = email
-	m.FromName = name
+	address := formatAddress(email, name)
+	if address == "" { return m }
+
+	m.From = address
 	return m
 }
 
-// helper to format "Name <email>" if name is given
-func formatAddress(email, name string) string {
-	if name != "" {
-		return fmt.Sprintf("\"%s\" <%s>", name, email)
-	}
-	return email
-}
-
 func (m *Mailer) AddAddress(email, name string) *Mailer {
-	m.To = append(m.To, formatAddress(email, name))
+	address := formatAddress(email, name)
+	if address == "" { return m }
+
+	m.To = append(m.To, address)
 	return m
 }
 
 func (m *Mailer) AddCC(email, name string) *Mailer {
-	m.Cc = append(m.Cc, formatAddress(email, name))
+	address := formatAddress(email, name)
+	if address == "" { return m }
+
+	m.Cc = append(m.Cc, address)
 	return m
 }
 
 func (m *Mailer) AddBCC(email, name string) *Mailer {
-	m.Bcc = append(m.Bcc, formatAddress(email, name))
+	address := formatAddress(email, name)
+	if address == "" { return m }
+
+	m.Bcc = append(m.Bcc, address)
 	return m
 }
 
 func (m *Mailer) AddReplyTo(email, name string) *Mailer {
-	m.ReplyTo = append(m.ReplyTo, formatAddress(email, name))
+	address := formatAddress(email, name)
+	if address == "" { return m }
+
+	m.ReplyTo = append(m.ReplyTo, address)
 	return m
 }
 
+
 func (m *Mailer) SetSubject(subject string) *Mailer {
-	m.Subject = subject
+	subject = sanitizeHeader(subject)
+	m.Subject = mime.QEncoding.Encode("utf-8",subject)
 	return m
 }
 
@@ -171,7 +245,10 @@ func (m *Mailer) AddAttachment(path string, name string) *Mailer {
 
 	// Set filename
 		if name == "" { name = filepath.Base(path) }
-
+		
+	// Sanitize it first
+		name = sanitizeFilename(name)
+		name = mime.BEncoding.Encode("utf-8", name)
 	m.Attachments = append(m.Attachments, Attachment{
 		Filename: name,
 		Data:     data,
@@ -181,13 +258,23 @@ func (m *Mailer) AddAttachment(path string, name string) *Mailer {
 }
 
 func (m *Mailer) SendRaw(ctx context.Context) error {
-	boundary := fmt.Sprintf("NextPartBoundary_%d", time.Now().UnixNano())
+	boundary, err := generateBoundary()
+	if err != nil {
+		return fmt.Errorf("failed to generate boundary: %w", err)
+	}
 	var buf bytes.Buffer
 
-	// Headers 
+	// Validate inputs
+		if m.From == "" {
+			return fmt.Errorf("Invalid 'from' address")
+		}
+		if len(m.To)+len(m.Cc)+len(m.Bcc) == 0 {
+			return fmt.Errorf("No recipients")
+		}
+
+	// Headers
 		// from, to, cc and reply-to
-			from := formatAddress(m.From, m.FromName)
-			buf.WriteString(fmt.Sprintf("From: %s\r\n", from))
+			buf.WriteString(fmt.Sprintf("From: %s\r\n", m.From))
 			buf.WriteString(fmt.Sprintf("To: %s\r\n", strings.Join(m.To, ",")))
 			if len(m.Cc) > 0 {
 				buf.WriteString(fmt.Sprintf("Cc: %s\r\n", strings.Join(m.Cc, ",")))
@@ -201,10 +288,12 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 			buf.WriteString(fmt.Sprintf("Content-Type: multipart/mixed; boundary=\"%s\"\r\n\r\n", boundary ))
 
 	// Main body part
+		if m.ContentType == "" { m.ContentType = "text/plain" }
+
 		buf.WriteString(fmt.Sprintf("--%s\r\n", boundary))
 		buf.WriteString(fmt.Sprintf("Content-Type: %s; charset=\"UTF-8\"\r\n", m.ContentType))
-		buf.WriteString("Content-Transfer-Encoding: 7bit\r\n\r\n")
-		buf.WriteString( m.Body + "\r\n" )
+		buf.WriteString("Content-Transfer-Encoding: quoted-printable\r\n\r\n")
+		buf.WriteString( encodeBodyQP(m.Body) + "\r\n" )
 
 		// Attachments
 			for _, att := range m.Attachments {
@@ -212,10 +301,7 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 				buf.WriteString(fmt.Sprintf("Content-Type: application/octet-stream; name=\"%s\"\r\n", att.Filename))
 				buf.WriteString("Content-Transfer-Encoding: base64\r\n")
 				buf.WriteString(fmt.Sprintf("Content-Disposition: attachment; filename=\"%s\"\r\n\r\n", att.Filename))
-
-					encoded := make([]byte, base64.StdEncoding.EncodedLen(len(att.Data)))
-					base64.StdEncoding.Encode(encoded, att.Data)
-				buf.WriteString(string(encoded) + "\r\n")
+				buf.WriteString(wrapBase64(att.Data))
 			}
 		buf.WriteString(fmt.Sprintf("--%s--", boundary))
 
@@ -251,6 +337,14 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 func (m *Mailer) SendContext(ctx context.Context) error {
 	// If there is an attachment, then send with raw email input
 		if len(m.Attachments) > 0 { return m.SendRaw( ctx ) }
+
+	// Validate inputs
+		if m.From == "" {
+			return fmt.Errorf("no 'From' address specified")
+		}
+		if len(m.To)+len(m.Cc)+len(m.Bcc) == 0 {
+			return fmt.Errorf("no recipients specified")
+		}
 
 	// Prepare destination
 	destination := &types.Destination{
@@ -296,7 +390,7 @@ func (m *Mailer) SendContext(ctx context.Context) error {
 	}
 
 	// Prepare SES input
-	from := formatAddress(m.From, m.FromName)
+	from := m.From
 
 	input := &ses.SendEmailInput{
 		Source:           &from,
