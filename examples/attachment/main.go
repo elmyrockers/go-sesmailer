@@ -12,7 +12,7 @@ func main() {
 		AddAddress("elmyrockers@gmail.com", "Helmi Aziz").
 		SetSubject("Email With Attachments").
 		SetBody("This is test email with attachments").
-		AddAttachment( "cat.webp", "" ).
+		AddAttachment( "cat.webp", "" ). //<----------------------Add a few pictures as attachments
 		AddAttachment( "rabbit.jpg", "" ).
 		AddAttachment( "dog.jpg", "" ).
 		SetDebug(2).
