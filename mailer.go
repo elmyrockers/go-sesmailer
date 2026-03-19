@@ -7,13 +7,17 @@ import (
 	"os"
 	"encoding/base64"
 	"strings"
+	"bytes"
 	"path/filepath"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
 	"github.com/aws/smithy-go/logging"
+
+	// "github.com/davecgh/go-spew/spew"
 )
 
 
@@ -177,46 +181,54 @@ func (m *Mailer) AddAttachment(path string, name string) *Mailer {
 }
 
 func (m *Mailer) SendRaw(ctx context.Context) error {
-	// Headers
-		boundary := "NextPartBoundary"
-		from := formatAddress(m.From, m.FromName)
+	boundary := fmt.Sprintf("NextPartBoundary_%d", time.Now().UnixNano())
+	var buf bytes.Buffer
 
-		headers := ""
-		headers += fmt.Sprintf("From: %s\r\n", from)
-		headers += fmt.Sprintf("To: %s\r\n", strings.Join(m.To, ","))
-		headers += fmt.Sprintf("Subject: %s\r\n", m.Subject)
-		headers += "MIME-Version: 1.0\r\n"
-		headers += fmt.Sprintf("Content-Type: multipart/mixed; boundary=\"%s\"\r\n", boundary)
-		headers += "\r\n"
+	// Headers 
+		// from, to, cc and reply-to
+			from := formatAddress(m.From, m.FromName)
+			buf.WriteString(fmt.Sprintf("From: %s\r\n", from))
+			buf.WriteString(fmt.Sprintf("To: %s\r\n", strings.Join(m.To, ",")))
+			if len(m.Cc) > 0 {
+				buf.WriteString(fmt.Sprintf("Cc: %s\r\n", strings.Join(m.Cc, ",")))
+			}
+			if len(m.ReplyTo) > 0 {
+				buf.WriteString(fmt.Sprintf("Reply-To: %s\r\n", strings.Join(m.ReplyTo, ",")))
+			}
+		// subject
+			buf.WriteString(fmt.Sprintf("Subject: %s\r\n", m.Subject))
+			buf.WriteString("MIME-Version: 1.0\r\n")
+			buf.WriteString(fmt.Sprintf("Content-Type: multipart/mixed; boundary=\"%s\"\r\n\r\n", boundary ))
 
 	// Main body part
-		body := ""
-		body += fmt.Sprintf("--%s\r\n", boundary)
-		body += fmt.Sprintf("Content-Type: %s; charset=\"UTF-8\"\r\n", m.ContentType)
-		body += "Content-Transfer-Encoding: 7bit\r\n\r\n"
-		body += m.Body + "\r\n"
+		buf.WriteString(fmt.Sprintf("--%s\r\n", boundary))
+		buf.WriteString(fmt.Sprintf("Content-Type: %s; charset=\"UTF-8\"\r\n", m.ContentType))
+		buf.WriteString("Content-Transfer-Encoding: 7bit\r\n\r\n")
+		buf.WriteString( m.Body + "\r\n" )
 
 		// Attachments
 			for _, att := range m.Attachments {
-				body += fmt.Sprintf("--%s\r\n", boundary)
-				body += fmt.Sprintf("Content-Type: application/octet-stream; name=\"%s\"\r\n", att.Filename)
-				body += "Content-Transfer-Encoding: base64\r\n"
-				body += fmt.Sprintf("Content-Disposition: attachment; filename=\"%s\"\r\n\r\n", att.Filename)
+				buf.WriteString(fmt.Sprintf("--%s\r\n", boundary))
+				buf.WriteString(fmt.Sprintf("Content-Type: application/octet-stream; name=\"%s\"\r\n", att.Filename))
+				buf.WriteString("Content-Transfer-Encoding: base64\r\n")
+				buf.WriteString(fmt.Sprintf("Content-Disposition: attachment; filename=\"%s\"\r\n\r\n", att.Filename))
 
-				encoded := make([]byte, base64.StdEncoding.EncodedLen(len(att.Data)))
-				base64.StdEncoding.Encode(encoded, att.Data)
-
-				body += string(encoded) + "\r\n"
+					encoded := make([]byte, base64.StdEncoding.EncodedLen(len(att.Data)))
+					base64.StdEncoding.Encode(encoded, att.Data)
+				buf.WriteString(string(encoded) + "\r\n")
 			}
-		body += fmt.Sprintf("--%s--", boundary)
+		buf.WriteString(fmt.Sprintf("--%s--", boundary))
 
 
 	// Prepare input for SendRawEmail()
-		rawMessage := headers + body
+		allRecipients := append([]string{}, m.To...)
+		allRecipients = append(allRecipients, m.Cc...)
+		allRecipients = append(allRecipients, m.Bcc...)
 		input := &ses.SendRawEmailInput{
 			RawMessage: &types.RawMessage{
-				Data: []byte(rawMessage),
+				Data: buf.Bytes(),
 			},
+			Destinations: allRecipients,
 		}
 
 	_, err := m.client.SendRawEmail(ctx, input)
