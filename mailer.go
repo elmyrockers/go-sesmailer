@@ -317,7 +317,7 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 			Destinations: allRecipients,
 		}
 
-	_, err := m.client.SendRawEmail(ctx, input)
+	_, err = m.client.SendRawEmail(ctx, input)
 	if err != nil {
 		if m.Debug > 0 {
 			fmt.Printf("\n\nSES SendRawEmail error: %v", err)
