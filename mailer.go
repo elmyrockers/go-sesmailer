@@ -304,7 +304,7 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 					if err != nil {
 						return fmt.Errorf("Failed to stream attachment %s: %w", att.Filename, err)
 					}
-					err := encoder.Close() // Flush the encoder
+					err = encoder.Close() // Flush the encoder
 					if err != nil {
 						return fmt.Errorf("Failed to finalize attachment %s: %w", att.Filename, err)
 					}
