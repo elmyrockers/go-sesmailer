@@ -299,7 +299,7 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 						}
 						return fmt.Errorf("Failed to stream attachment %s: %w", att.Filename, err)
 					}
-					encoder.Close()                      // Flush the encoder
+					encoder.Close() // Flush the encoder
 					buf.WriteString("\r\n")
 
 				// Clean up: Close file handles if they are Closers (like os.File)
