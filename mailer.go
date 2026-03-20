@@ -224,12 +224,7 @@ func (m *Mailer) IsHTML(isHtml bool) *Mailer {
 }
 
 func (m *Mailer) AddAttachment(path string, name string) *Mailer {
-	// Get binary data
-		// data, err := os.ReadFile(path)
-		// if err != nil {
-		// 	log.Printf("failed to read attachment: %v", err)
-		// 	return m
-		// }
+	// Get file pointer
 		file, err := os.Open( path )
 		if err != nil {
 			log.Printf("failed to open attachment: %v", err)
