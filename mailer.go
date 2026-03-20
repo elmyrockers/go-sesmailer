@@ -21,8 +21,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
 	"github.com/aws/smithy-go/logging"
-
-	// "github.com/davecgh/go-spew/spew"
 )
 
 
