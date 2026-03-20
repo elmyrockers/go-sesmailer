@@ -70,10 +70,29 @@ func New() *Mailer {
 
 //---------------------------------------------------------------------------------------------------- HELPERS
 func sanitizeHeader(s string) string {
-	s = strings.ReplaceAll(s, "\r", "")
-	s = strings.ReplaceAll(s, "\n", "")
-	s = strings.ReplaceAll(s, "\x00", "")
-	return strings.TrimSpace(s)
+	// Clean control characters (Rune-aware)
+		s = strings.Map(func(r rune) rune {
+			if r == '\r' || r == '\n' || r == 0 || r == 127 {
+				return -1
+			}
+			if r < 32 && r != '\t' {
+				return -1
+			}
+			return r
+		}, s)
+		s = strings.TrimSpace(s)
+
+	// Truncate by BYTES (RFC 5322) but stay UTF-8 safe
+		if len(s) > 998 {
+			idx := 998
+			// Step back if inside a UTF-8 continuation byte
+			for idx > 0 && (s[idx]&0xC0 == 0x80) {
+				idx--
+			}
+			s = s[:idx]
+		}
+
+	return s
 }
 
 // Format address safely
