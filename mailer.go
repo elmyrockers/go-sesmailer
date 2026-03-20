@@ -109,20 +109,6 @@ func generateBoundary() (string, error) {
 	return boundary, nil
 }
 
-// wrapBase64 splits data into Base64 lines for email attachments
-func wrapBase64(data []byte) string {
-	encoded := base64.StdEncoding.EncodeToString(data)
-	var buf strings.Builder
-	for i := 0; i < len(encoded); i += 76 {
-		end := i + 76
-		if end > len(encoded) {
-			end = len(encoded)
-		}
-		buf.WriteString(encoded[i:end] + "\r\n")
-	}
-	return buf.String()
-}
-
 func encodeBodyQP(body string) string {
 	var buf bytes.Buffer
 	w := quotedprintable.NewWriter(&buf)
