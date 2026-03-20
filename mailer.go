@@ -110,7 +110,10 @@ func generateBoundary() (string, error) {
 func encodeBodyQP(body string) string {
 	var buf bytes.Buffer
 	w := quotedprintable.NewWriter(&buf)
-	w.Write([]byte(body))
+	_, err := w.Write([]byte(body))
+	if err != nil {
+		log.Printf("encodeBodyQP: failed to write body: %v", err)
+	}
 	w.Close()
 	return buf.String()
 }
