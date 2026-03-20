@@ -14,6 +14,7 @@ import (
 	"net/mail"
 	"mime/quotedprintable"
 	"mime"
+	"io"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -27,7 +28,8 @@ import (
 
 type Attachment struct {
 	Filename string
-	Data     []byte
+	Data     io.Reader
+	// Data     []byte
 }
 type Mailer struct {
 	From        string
@@ -237,9 +239,14 @@ func (m *Mailer) IsHTML(isHtml bool) *Mailer {
 
 func (m *Mailer) AddAttachment(path string, name string) *Mailer {
 	// Get binary data
-		data, err := os.ReadFile(path)
+		// data, err := os.ReadFile(path)
+		// if err != nil {
+		// 	log.Printf("failed to read attachment: %v", err)
+		// 	return m
+		// }
+		file, err := os.Open( path )
 		if err != nil {
-			log.Printf("failed to read attachment: %v", err)
+			log.Printf("failed to open attachment: %v", err)
 			return m
 		}
 
@@ -251,7 +258,7 @@ func (m *Mailer) AddAttachment(path string, name string) *Mailer {
 		name = mime.BEncoding.Encode("utf-8", name)
 	m.Attachments = append(m.Attachments, Attachment{
 		Filename: name,
-		Data:     data,
+		Data:     file, // stream data
 	})
 
 	return m
@@ -301,7 +308,20 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 				buf.WriteString(fmt.Sprintf("Content-Type: application/octet-stream; name=\"%s\"\r\n", att.Filename))
 				buf.WriteString("Content-Transfer-Encoding: base64\r\n")
 				buf.WriteString(fmt.Sprintf("Content-Disposition: attachment; filename=\"%s\"\r\n\r\n", att.Filename))
-				buf.WriteString(wrapBase64(att.Data))
+
+				// High Performance: Pipe the data from Reader -> Base64 Encoder -> Final Buffer
+					encoder := base64.NewEncoder(base64.StdEncoding, &buf)
+					_, err := io.Copy(encoder, att.Data) // Streams in 32KB chunks
+					if err != nil {
+						return fmt.Errorf("failed to send raw email: %w", err)
+					}
+					encoder.Close()                      // Flush the encoder
+					buf.WriteString("\r\n")
+
+				// Clean up: Close file handles if they are Closers (like os.File)
+					if closer, ok := att.Data.(io.Closer); ok {
+						closer.Close()
+					}
 			}
 		buf.WriteString(fmt.Sprintf("--%s--", boundary))
 
