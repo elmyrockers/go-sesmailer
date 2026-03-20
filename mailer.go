@@ -294,7 +294,10 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 					encoder := base64.NewEncoder(base64.StdEncoding, &buf)
 					_, err := io.Copy(encoder, att.Data) // Streams in 32KB chunks
 					if err != nil {
-						return fmt.Errorf("failed to send raw email: %w", err)
+						if closer, ok := att.Data.(io.Closer); ok {
+							closer.Close() // Close now so we don't leak a handle on failure
+						}
+						return fmt.Errorf("Failed to stream attachment %s: %w", att.Filename, err)
 					}
 					encoder.Close()                      // Flush the encoder
 					buf.WriteString("\r\n")
