@@ -33,9 +33,10 @@ func TestMailer_SetFrom(t *testing.T) {
 		name     string
 		email    string
 		fullname string
+		expected string
 	}{
-		{"email with name", "helmi@xeno.com.my", "Helmi Aziz"},
-		{"email only", "helmi@xeno.com.my", ""},
+		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "\"Helmi Aziz\" <helmi@xeno.com.my>"},
+		{"email only", "helmi@xeno.com.my", "", "helmi@xeno.com.my"},
 	}
 
 	for _, tt := range tests {
@@ -44,11 +45,8 @@ func TestMailer_SetFrom(t *testing.T) {
 			m.SetFrom(tt.email, tt.fullname) //set
 
 			//Check
-			if m.From != tt.email {
-				t.Errorf("expected From %s but got %s", tt.email, m.From)
-			}
-			if m.FromName != tt.fullname {
-				t.Errorf("expected FromName %s but got %s", tt.fullname, m.FromName)
+			if m.From != tt.expected {
+				t.Errorf("expected From %s but got %s", tt.expected, m.From)
 			}
 		})
 	}
