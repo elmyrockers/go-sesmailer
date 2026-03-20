@@ -14,7 +14,7 @@ func TestFormatAddress(t *testing.T) {
 		fullname string
 		expected string
 	}{
-		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "\"Helmi Aziz\" <helmi@xeno.com.my>"},
+		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "Helmi Aziz <helmi@xeno.com.my>"},
 		{"email only", "helmi@xeno.com.my", "", "helmi@xeno.com.my"},
 	}
 
@@ -35,7 +35,7 @@ func TestMailer_SetFrom(t *testing.T) {
 		fullname string
 		expected string
 	}{
-		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "\"Helmi Aziz\" <helmi@xeno.com.my>"},
+		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "Helmi Aziz <helmi@xeno.com.my>"},
 		{"email only", "helmi@xeno.com.my", "", "helmi@xeno.com.my"},
 	}
 
@@ -59,7 +59,7 @@ func TestMailer_AddAddress(t *testing.T) {
 		fullname string
 		expected string
 	}{
-		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "\"Helmi Aziz\" <helmi@xeno.com.my>"},
+		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "Helmi Aziz <helmi@xeno.com.my>"},
 		{"email only", "helmi@xeno.com.my", "", "helmi@xeno.com.my"},
 	}
 
@@ -87,7 +87,7 @@ func TestMailer_AddCC(t *testing.T) {
 		fullname string
 		expected string
 	}{
-		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "\"Helmi Aziz\" <helmi@xeno.com.my>"},
+		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "Helmi Aziz <helmi@xeno.com.my>"},
 		{"email only", "helmi@xeno.com.my", "", "helmi@xeno.com.my"},
 	}
 
@@ -115,7 +115,7 @@ func TestMailer_AddBCC(t *testing.T) {
 		fullname string
 		expected string
 	}{
-		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "\"Helmi Aziz\" <helmi@xeno.com.my>"},
+		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "Helmi Aziz <helmi@xeno.com.my>"},
 		{"email only", "helmi@xeno.com.my", "", "helmi@xeno.com.my"},
 	}
 
@@ -143,7 +143,7 @@ func TestMailer_AddReplyTo(t *testing.T) {
 		fullname string
 		expected string
 	}{
-		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "\"Helmi Aziz\" <helmi@xeno.com.my>"},
+		{"email with name", "helmi@xeno.com.my", "Helmi Aziz", "Helmi Aziz <helmi@xeno.com.my>"},
 		{"email only", "helmi@xeno.com.my", "", "helmi@xeno.com.my"},
 	}
 
