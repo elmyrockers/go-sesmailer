@@ -244,11 +244,21 @@ func (m *Mailer) AddAttachment(path string, name string) *Mailer {
 }
 
 func (m *Mailer) SendRaw(ctx context.Context) error {
-	boundary, err := generateBoundary()
-	if err != nil {
-		return fmt.Errorf("failed to generate boundary: %w", err)
-	}
-	var buf bytes.Buffer
+	// Automatically close the opened attachments
+		defer func() {
+			for _, att := range m.Attachments {
+				if closer, ok := att.Data.(io.Closer); ok {
+					closer.Close()
+				}
+			}
+		}()
+
+	//--------------------------------------
+		boundary, err := generateBoundary()
+		if err != nil {
+			return fmt.Errorf("failed to generate boundary: %w", err)
+		}
+		var buf bytes.Buffer
 
 	// Validate inputs
 		if m.From == "" {
@@ -292,18 +302,13 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 					encoder := base64.NewEncoder(base64.StdEncoding, &buf)
 					_, err := io.Copy(encoder, att.Data) // Streams in 32KB chunks
 					if err != nil {
-						if closer, ok := att.Data.(io.Closer); ok {
-							closer.Close() // Close now so we don't leak a handle on failure
-						}
 						return fmt.Errorf("Failed to stream attachment %s: %w", att.Filename, err)
 					}
-					encoder.Close() // Flush the encoder
-					buf.WriteString("\r\n")
-
-				// Clean up: Close file handles if they are Closers (like os.File)
-					if closer, ok := att.Data.(io.Closer); ok {
-						closer.Close()
+					err := encoder.Close() // Flush the encoder
+					if err != nil {
+						return fmt.Errorf("Failed to finalize attachment %s: %w", att.Filename, err)
 					}
+					buf.WriteString("\r\n")
 			}
 		buf.WriteString(fmt.Sprintf("--%s--", boundary))
 
