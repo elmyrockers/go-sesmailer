@@ -13,7 +13,6 @@ go-sesmailer provides a simple and developer-friendly interface to send emails u
 
 ## Features
 
-
 - **Lightweight and tiny wrapper** around Amazon SES.
 - Built on top of the **official AWS SDK for Go v2**.
 - Uses the **Amazon SES API** instead of SMTP for better performance and faster delivery. 
@@ -153,10 +152,16 @@ if err != nil {
 | `Send() error` | Sends the email using a default background context. |
 | `SendContext(ctx context.Context) error` | Sends the email using a custom context. Useful for timeouts, cancellations, or request tracing. |
 
+## Security Highlights
 
-
-
-
+- **Production-Ready:** Fully tested and safe for use in production environments.
+- **Header Injection Protection:** All headers sanitized to remove CR, LF, null, and control characters.
+- **RFC 5322 Compliant:** Header lengths truncated at 998 bytes safely, UTF-8 aware
+- **Safe Email Addresses:** Validated and properly encoded display names.
+- **Attachment Security:** Filenames sanitized; data streamed and base64-encoded.
+- **Body Encoding:** Quoted-printable encoding ensures safe transmission of non-ASCII content.
+- **AWS SES Secure Delivery:** Uses official SDK v2 with TLS and signed requests.
+- **Debug & Logging Control:** Optional debug with minimal exposure of sensitive info.
 
 ## License
 
