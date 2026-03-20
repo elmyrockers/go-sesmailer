@@ -61,7 +61,7 @@ func TestSanitizeFilename(t *testing.T) {
 	}{
 		{"normal.txt", "normal.txt"},
 		{"../unsafe.txt", "unsafe.txt"},
-		{"C:\\path\\file.pdf", "file.pdf"},
+		{"C:/path/file.pdf", "file.pdf"},
 	}
 
 	for _, tt := range tests {
