@@ -95,19 +95,23 @@ func sanitizeHeader(s string) string {
 	return s
 }
 
-// Format address safely
 func formatAddress(email, name string) string {
-	email = strings.ToLower(email)
-	email = sanitizeHeader(email)
-	name = sanitizeHeader(name)
-	if _, err := mail.ParseAddress(email); err != nil {
-		return "" // invalid email, return empty
-	}
-	if name == "" {
-		return email
-	}
-	name = mime.QEncoding.Encode("utf-8", name)
-	return fmt.Sprintf("%s <%s>", name, email)
+    email = strings.ToLower(strings.TrimSpace(email))
+    email = sanitizeHeader(email)
+
+    // Validate the email first
+    if _, err := mail.ParseAddress(email); err != nil {
+        return "" 
+    }
+
+    if name == "" {
+        return email
+    }
+
+    name = sanitizeHeader(name)
+    name = mime.QEncoding.Encode("utf-8", name)
+
+    return fmt.Sprintf("%s <%s>", name, email)
 }
 
 // Sanitize filenames
@@ -275,14 +279,7 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 			}
 		}()
 
-	//--------------------------------------
-		boundary, err := generateBoundary()
-		if err != nil {
-			return fmt.Errorf("failed to generate boundary: %w", err)
-		}
-		var buf bytes.Buffer
-
-	// Validate inputs
+	// Validate inputs first
 		if m.From == "" {
 			return fmt.Errorf("Invalid 'from' address")
 		}
@@ -290,7 +287,15 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 			return fmt.Errorf("No recipients")
 		}
 
+	// Generate mixed boundary (because there are attachments)
+		mixedBoundary, err := generateBoundary()
+		if err != nil {
+			return fmt.Errorf("Failed to generate mixed boundary: %w", err)
+		}
+
 	// Headers
+		var buf bytes.Buffer
+
 		// from, to, cc and reply-to
 			buf.WriteString(fmt.Sprintf("From: %s\r\n", m.From))
 			buf.WriteString(fmt.Sprintf("To: %s\r\n", strings.Join(m.To, ",")))
@@ -303,36 +308,60 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 		// subject
 			buf.WriteString(fmt.Sprintf("Subject: %s\r\n", m.Subject))
 			buf.WriteString("MIME-Version: 1.0\r\n")
-			buf.WriteString(fmt.Sprintf("Content-Type: multipart/mixed; boundary=\"%s\"\r\n\r\n", boundary ))
+			buf.WriteString(fmt.Sprintf("Content-Type: multipart/mixed; boundary=\"%s\"\r\n\r\n", mixedBoundary ))
 
 	// Main body part
-		if m.ContentType == "" { m.ContentType = "text/plain" }
+		buf.WriteString(fmt.Sprintf("--%s\r\n", mixedBoundary))
+		
+		// Plaintext-only or Html-only
+			if m.ContentType == "text/plain" || len(m.AltBody) == 0 {
+				buf.WriteString(fmt.Sprintf("Content-Type: %s; charset=\"UTF-8\"\r\n", m.ContentType))
+				buf.WriteString("Content-Transfer-Encoding: quoted-printable\r\n\r\n")
+				buf.WriteString( encodeBodyQP(m.Body) + "\r\n\r\n" )
 
-		buf.WriteString(fmt.Sprintf("--%s\r\n", boundary))
-		buf.WriteString(fmt.Sprintf("Content-Type: %s; charset=\"UTF-8\"\r\n", m.ContentType))
-		buf.WriteString("Content-Transfer-Encoding: quoted-printable\r\n\r\n")
-		buf.WriteString( encodeBodyQP(m.Body) + "\r\n" )
+		// Html with Altbody
+			} else {
+				altBoundary, err := generateBoundary()
+				if err != nil {
+					return fmt.Errorf("Failed to generate alt boundary: %w", err)
+				}
+				buf.WriteString(fmt.Sprintf("Content-Type: multipart/alternative; boundary=\"%s\"\r\n\r\n", altBoundary))
 
-		// Attachments
-			for _, att := range m.Attachments {
-				buf.WriteString(fmt.Sprintf("--%s\r\n", boundary))
-				buf.WriteString(fmt.Sprintf("Content-Type: application/octet-stream; name=\"%s\"\r\n", att.Filename))
-				buf.WriteString("Content-Transfer-Encoding: base64\r\n")
-				buf.WriteString(fmt.Sprintf("Content-Disposition: attachment; filename=\"%s\"\r\n\r\n", att.Filename))
+				buf.WriteString(fmt.Sprintf("--%s\r\n", altBoundary))
+				buf.WriteString("Content-Type: text/plain; charset=UTF-8\r\n")
+				buf.WriteString("Content-Transfer-Encoding: quoted-printable\r\n\r\n")
+				buf.WriteString( encodeBodyQP(m.AltBody) + "\r\n\r\n" )
 
-				// High Performance: Pipe the data from Reader -> Base64 Encoder -> Final Buffer
-					encoder := base64.NewEncoder(base64.StdEncoding, &buf)
-					_, err := io.Copy(encoder, att.Data) // Streams in 32KB chunks
-					if err != nil {
-						return fmt.Errorf("Failed to stream attachment %s: %w", att.Filename, err)
-					}
-					err = encoder.Close() // Flush the encoder
-					if err != nil {
-						return fmt.Errorf("Failed to finalize attachment %s: %w", att.Filename, err)
-					}
-					buf.WriteString("\r\n")
+				buf.WriteString(fmt.Sprintf("--%s\r\n", altBoundary))
+				buf.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
+				buf.WriteString("Content-Transfer-Encoding: quoted-printable\r\n\r\n")
+				buf.WriteString( encodeBodyQP(m.Body) + "\r\n\r\n" )
+
+				buf.WriteString(fmt.Sprintf("--%s--\r\n\r\n", altBoundary)) // close alt boundary
 			}
-		buf.WriteString(fmt.Sprintf("--%s--", boundary))
+
+	// Attachments
+		for _, att := range m.Attachments {
+			extension := filepath.Ext( att.Filename )
+			contentType := mime.TypeByExtension( extension )
+			buf.WriteString(fmt.Sprintf("--%s\r\n", mixedBoundary))
+			buf.WriteString(fmt.Sprintf("Content-Type: %s; name=\"%s\"\r\n", contentType, att.Filename))
+			buf.WriteString("Content-Transfer-Encoding: base64\r\n")
+			buf.WriteString(fmt.Sprintf("Content-Disposition: attachment; filename=\"%s\"\r\n\r\n", att.Filename))
+
+			// High Performance: Pipe the data from Reader -> Base64 Encoder -> Final Buffer
+				encoder := base64.NewEncoder(base64.StdEncoding, &buf)
+				_, err := io.Copy(encoder, att.Data) // Streams in 32KB chunks
+				if err != nil {
+					return fmt.Errorf("Failed to stream attachment %s: %w", att.Filename, err)
+				}
+				err = encoder.Close() // Flush the encoder
+				if err != nil {
+					return fmt.Errorf("Failed to finalize attachment %s: %w", att.Filename, err)
+				}
+				buf.WriteString("\r\n\r\n")
+		}
+		buf.WriteString(fmt.Sprintf("--%s--", mixedBoundary)) // close mixed boundary
 
 
 	// Prepare input for SendRawEmail()
