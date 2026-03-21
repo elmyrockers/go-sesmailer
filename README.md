@@ -169,7 +169,7 @@ if err != nil {
 | `SetSubject(subject string) *Mailer` | Sets the email subject line. |
 | `SetBody(body string) *Mailer` | Sets the main email body content. |
 | `SetAltBody(alt string) *Mailer` | Sets an alternative plain-text body when sending HTML emails. |
-| `AddAttachment(path string, name string) *Mailer` | Opens a file from path and prepares it for Base64 streaming. Uses io.Reader to process data in 32KB chunks, keeping memory usage low even for large files. Automatically closes file handles after sending. |
+| `AddAttachment(path string, name string) *Mailer` | Adds an attachment via **streaming**. Uses `io.Reader` (**32KB chunks**) for **low memory usage** and **performance**. Automatically **closes file handles** after sending. |
 | `IsHTML(isHtml bool) *Mailer` | Sets whether the email content type should be `text/html` or `text/plain`. |
 | `SetDebug(level int) *Mailer` | Enables debug logging. `0 = disabled`, `1 = errors/retries`, `2 = verbose request/response logs`. |
 | `Send() error` | Sends the email using a default background context. |
