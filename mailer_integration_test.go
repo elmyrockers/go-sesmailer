@@ -4,6 +4,8 @@ package sesmailer
 
 import (
 	// "os"
+	"io"
+	// "path/filepath"
 	"context"
 	"testing"
 
@@ -120,4 +122,39 @@ func TestIntegration_Send_NoRecipient(t *testing.T) {
     if err == nil {
         t.Fatal("expected error but got nil")
     }
+}
+
+// TestIntegration_SendRaw tests the complex MIME assembly and attachment streaming
+func TestIntegration_SendRaw(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
+	// 1. Initialize Mailer
+		m := New().
+			SetFrom("no-reply@xeno.com.my", "Xeno System").
+			AddAddress("elmyrockers@gmail.com", "Helmi Aziz").
+			SetSubject("Integration Test: SendRaw with Attachment").
+			SetBody("Please find the attached cat image.").
+			AddAttachment( "examples/attachment/cat.webp", "cool-cat.webp").
+			SetDebug(2)
+
+	// Send attachment email through SendRaw()
+		ctx := context.Background()
+		err := m.SendRaw(ctx)
+		if err != nil {
+			t.Fatalf("SendRaw() failed: %v", err)
+		}
+
+	// Since SendRaw has a defer loop to close attachments, 
+	// trying to Read from the file now should fail.
+		for _, att := range m.Attachments {
+			if r, ok := att.Data.(io.Reader); ok {
+				buf := make([]byte, 1)
+				_, readErr := r.Read(buf)
+				if readErr == nil {
+					t.Error("Expected file to be closed, but was still readable")
+				}
+			}
+		}
 }
