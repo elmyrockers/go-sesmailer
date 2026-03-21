@@ -3,15 +3,12 @@
 package sesmailer
 
 import (
-	// "os"
 	"io"
-	// "path/filepath"
 	"context"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	_ "github.com/joho/godotenv/autoload"
-	// "github.com/davecgh/go-spew/spew"
 )
 
 func TestIntegration_New(t *testing.T) {
@@ -87,6 +84,25 @@ func TestIntegration_SendContext(t *testing.T) {
 	}
 }
 
+func TestIntegration_SendContext_NoFrom(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
+	mailer := New().
+		AddAddress("elmyrockers@gmail.com", "Helmi Aziz").
+		SetSubject("Integration Test SendContext() Without From Address").
+		SetBody("This is a test email from SendContext() integration test but without From address").
+		IsHTML(false).
+		SetDebug(2)
+
+	ctx := context.Background()
+	err := mailer.SendContext(ctx)
+	if err == nil {
+		t.Fatal("Expected error but got nil")
+	}
+}
+
 // TestIntegration_Send tests sending email with Send (default background context)
 func TestIntegration_Send(t *testing.T) {
 	if testing.Short() {
@@ -120,7 +136,7 @@ func TestIntegration_Send_NoRecipient(t *testing.T) {
 		Send()
 
     if err == nil {
-        t.Fatal("expected error but got nil")
+        t.Fatal("Expected error but got nil")
     }
 }
 
@@ -144,8 +160,7 @@ func TestIntegration_SendRaw(t *testing.T) {
 			SetDebug(2)
 
 	// Send attachment email through SendRaw()
-		ctx := context.Background()
-		err := m.SendRaw(ctx)
+		err := m.Send() //this will trigger SendRaw()
 		if err != nil {
 			t.Fatalf("SendRaw() failed: %v", err)
 		}
