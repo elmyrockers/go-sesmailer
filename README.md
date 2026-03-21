@@ -128,8 +128,20 @@ if err != nil {
 }
 ```
 
+### 4. Email with Attachments
+```go
+err := sesmailer.New().
+    SetFrom("no-reply@yourcompany.com", "Your Company").
+    AddAddress("helmi@xeno.com.my", "Helmi Aziz").
+    SetSubject("Email with Attachments").
+    SetBody("This email will include a few attachments").
+    // AddAttachment(path, displayName)
+    AddAttachment("docs/invoice_123.pdf", "Invoice.pdf").
+    AddAttachment("images/logo.png", "CompanyLogo.png").
+    Send()
+```
 
-### 4. Enabling Debug Logging:
+### 5. Enabling Debug Logging:
 ```go
 err := sesmailer.New().
     SetFrom("no-reply@yourcompany.com", "Your Company").
@@ -157,6 +169,7 @@ if err != nil {
 | `SetSubject(subject string) *Mailer` | Sets the email subject line. |
 | `SetBody(body string) *Mailer` | Sets the main email body content. |
 | `SetAltBody(alt string) *Mailer` | Sets an alternative plain-text body when sending HTML emails. |
+| `AddAttachment(path string, name string) *Mailer` | Opens a file from path and prepares it for Base64 streaming. Uses io.Reader to process data in 32KB chunks, keeping memory usage low even for large files. Automatically closes file handles after sending. |
 | `IsHTML(isHtml bool) *Mailer` | Sets whether the email content type should be `text/html` or `text/plain`. |
 | `SetDebug(level int) *Mailer` | Enables debug logging. `0 = disabled`, `1 = errors/retries`, `2 = verbose request/response logs`. |
 | `Send() error` | Sends the email using a default background context. |
