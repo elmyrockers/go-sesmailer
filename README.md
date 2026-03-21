@@ -135,7 +135,7 @@ err := sesmailer.New().
     AddAddress("helmi@xeno.com.my", "Helmi Aziz").
     SetSubject("Email with Attachments").
     SetBody("This email will include a few attachments").
-    // AddAttachment(path, displayName)
+    
     AddAttachment("docs/invoice_123.pdf", "Invoice.pdf").
     AddAttachment("images/logo.png", "CompanyLogo.png").
     Send()
