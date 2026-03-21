@@ -317,7 +317,7 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 			if m.ContentType == "text/plain" || len(m.AltBody) == 0 {
 				buf.WriteString(fmt.Sprintf("Content-Type: %s; charset=\"UTF-8\"\r\n", m.ContentType))
 				buf.WriteString("Content-Transfer-Encoding: quoted-printable\r\n\r\n")
-				buf.WriteString( encodeBodyQP(m.Body) + "\r\n\r\n" )
+				buf.WriteString( encodeBodyQP(m.Body) + "\r\n" )
 
 		// Html with Altbody
 			} else {
@@ -327,23 +327,27 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 				}
 				buf.WriteString(fmt.Sprintf("Content-Type: multipart/alternative; boundary=\"%s\"\r\n\r\n", altBoundary))
 
-				buf.WriteString(fmt.Sprintf("--%s\r\n", altBoundary))
-				buf.WriteString("Content-Type: text/plain; charset=UTF-8\r\n")
-				buf.WriteString("Content-Transfer-Encoding: quoted-printable\r\n\r\n")
-				buf.WriteString( encodeBodyQP(m.AltBody) + "\r\n\r\n" )
+				// Plaintext
+					buf.WriteString(fmt.Sprintf("--%s\r\n", altBoundary))
+					buf.WriteString("Content-Type: text/plain; charset=UTF-8\r\n")
+					buf.WriteString("Content-Transfer-Encoding: quoted-printable\r\n\r\n")
+					buf.WriteString( encodeBodyQP(m.AltBody) + "\r\n" )
 
-				buf.WriteString(fmt.Sprintf("--%s\r\n", altBoundary))
-				buf.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
-				buf.WriteString("Content-Transfer-Encoding: quoted-printable\r\n\r\n")
-				buf.WriteString( encodeBodyQP(m.Body) + "\r\n\r\n" )
+				// HTML
+					buf.WriteString(fmt.Sprintf("--%s\r\n", altBoundary))
+					buf.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
+					buf.WriteString("Content-Transfer-Encoding: quoted-printable\r\n\r\n")
+					buf.WriteString( encodeBodyQP(m.Body) + "\r\n" )
 
-				buf.WriteString(fmt.Sprintf("--%s--\r\n\r\n", altBoundary)) // close alt boundary
+				buf.WriteString(fmt.Sprintf("--%s--\r\n", altBoundary)) // close alt boundary
 			}
 
 	// Attachments
 		for _, att := range m.Attachments {
 			extension := filepath.Ext( att.Filename )
 			contentType := mime.TypeByExtension( extension )
+			if contentType == "" { contentType = "application/octet-stream" }
+
 			buf.WriteString(fmt.Sprintf("--%s\r\n", mixedBoundary))
 			buf.WriteString(fmt.Sprintf("Content-Type: %s; name=\"%s\"\r\n", contentType, att.Filename))
 			buf.WriteString("Content-Transfer-Encoding: base64\r\n")
@@ -359,9 +363,9 @@ func (m *Mailer) SendRaw(ctx context.Context) error {
 				if err != nil {
 					return fmt.Errorf("Failed to finalize attachment %s: %w", att.Filename, err)
 				}
-				buf.WriteString("\r\n\r\n")
+				buf.WriteString("\r\n")
 		}
-		buf.WriteString(fmt.Sprintf("--%s--", mixedBoundary)) // close mixed boundary
+		buf.WriteString(fmt.Sprintf("--%s--\r\n", mixedBoundary)) // close mixed boundary
 
 
 	// Prepare input for SendRawEmail()
