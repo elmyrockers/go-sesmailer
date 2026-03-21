@@ -140,6 +140,10 @@ err := sesmailer.New().
     AddAttachment("docs/invoice_123.pdf", "Invoice.pdf").
     AddAttachment("images/logo.png", "CompanyLogo.png").
     Send()
+
+if err != nil {
+    log.Fatalf("Failed to send email: %v", err)
+}
 ```
 
 ### 5. Enabling Debug Logging:
