@@ -134,6 +134,10 @@ func TestIntegration_SendRaw(t *testing.T) {
 		m := New().
 			SetFrom("no-reply@xeno.com.my", "Xeno System").
 			AddAddress("elmyrockers@gmail.com", "Helmi Aziz").
+			AddCC("elmyrockers@yahoo.com", "Helmi Aziz").
+			AddBCC("elmyrockers@hotmail.com", "Helmi Aziz").
+			AddReplyTo("helmi@xeno.com.my", "Helmi Aziz").
+
 			SetSubject("Integration Test: SendRaw with Attachment").
 			SetBody("Please find the attached cat image.").
 			AddAttachment( "examples/attachment/cat.webp", "cool-cat.webp").
