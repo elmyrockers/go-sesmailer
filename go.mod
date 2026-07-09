@@ -1,6 +1,6 @@
 module github.com/elmyrockers/go-sesmailer
 
-go 1.24.0
+go 1.26.5
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.41.3
@@ -22,5 +22,4 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.30.12 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.16 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.8 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 )
