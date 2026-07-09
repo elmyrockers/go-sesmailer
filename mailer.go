@@ -50,3 +50,63 @@ func New() *Mailer {
 			builder: 	 mimebuilder.New(),
 		}
 }
+
+func (m *Mailer) SetFrom(email, name string) *Mailer {
+	m.builder.SetFrom( email, name )
+	return m
+}
+
+func (m *Mailer) AddAddress(email, name string) *Mailer {
+	m.AddTo( email, name )
+	return m
+}
+
+func (m *Mailer) AddTo(email, name string) *Mailer {
+	m.builder.AddTo( email, name )
+	return m
+}
+
+func (m *Mailer) AddCC(email, name string) *Mailer {
+	m.builder.AddCC( email, name )
+	return m
+}
+
+func (m *Mailer) AddBCC(email, name string) *Mailer {
+	m.builder.AddBCC( email, name )
+	return m
+}
+
+func (m *Mailer) AddReplyTo(email, name string) *Mailer {
+	m.builder.AddReplyTo( email, name )
+	return m
+}
+
+func (m *Mailer) SetSubject(subject string) *Mailer {
+	m.builder.SetSubject( subject )
+	return m
+}
+
+func (m *Mailer) SetBody(body string) *Mailer {
+	m.builder.SetBody( body )
+	return m
+}
+
+func (m *Mailer) SetAltBody(alt string) *Mailer {
+	m.builder.SetAltBody( alt )
+	return m
+}
+
+func (m *Mailer) AsHTML() *Mailer {
+	m.builder.AsHTML()
+	return m
+}
+
+func (m *Mailer) Embed(name string, data []byte, cid string) *Mailer {
+	m.builder.Embed( name, data, cid )
+	return m
+}
+
+func (m *Mailer) Attach(filename string, data []byte) *MimeBuilder {
+	m.builder.Attach( filename, data )
+	return m
+}
