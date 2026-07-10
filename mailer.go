@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	// "io"
-	"log"
+	// "log"
 	
 	// "strings"
 	// "net/mail"
@@ -121,7 +121,7 @@ func (m *Mailer) Dump() *Mailer {
 
 func (m *Mailer) SendWithContext( ctx context.Context ) (*ses.SendRawEmailOutput, error) {
 	// Check error
-		if len(m.errorList)>0 { return _, m.errorList[0] }
+		if len(m.errorList)>0 { return nil, m.errorList[0] }
 
 	// Get MIME as buffer
 		mime, _ := m.builder.Build()
@@ -133,7 +133,7 @@ func (m *Mailer) SendWithContext( ctx context.Context ) (*ses.SendRawEmailOutput
 										Data: mime.Bytes(),
 									},
 								})
-		if err != nil { return _, err }
+		if err != nil { return nil, err }
 	return output, nil
 }
 
