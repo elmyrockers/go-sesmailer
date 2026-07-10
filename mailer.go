@@ -111,7 +111,7 @@ func (m *Mailer) Attach(filename string, data []byte) *Mailer {
 	return m
 }
 
-func (m *Mailer) PrintMime() {
+func (m *Mailer) Dump() {
 	mime, _ := m.builder.Build()
 	defer m.builder.Release( mime )
 
