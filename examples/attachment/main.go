@@ -15,6 +15,6 @@ func main() {
 		AddAttachment( "cat.webp", "" ). //<----------------------Add a few pictures as attachments
 		AddAttachment( "rabbit.jpg", "" ).
 		AddAttachment( "dog.jpg", "" ).
-		SetDebug(2).
+		Dump().
 		Send()
 }
