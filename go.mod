@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.11
 	github.com/aws/aws-sdk-go-v2/service/ses v1.34.20
 	github.com/aws/smithy-go v1.24.2
+	github.com/elmyrockers/go-mimebuilder v0.0.0-20260710035609-5a2c1ef9422c
 	github.com/joho/godotenv v1.5.1
 )
 
@@ -22,6 +23,5 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.30.12 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.16 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.8 // indirect
-	github.com/elmyrockers/go-mimebuilder v0.0.0-20260709112354-ad485d98e9f3 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 )
