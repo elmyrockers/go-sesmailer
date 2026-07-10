@@ -135,3 +135,7 @@ func (m *Mailer) SendWithContext( ctx context.Context ) (*ses.SendRawEmailOutput
 		if err != nil { return _, err }
 	return output, nil
 }
+
+func (m *Mailer) Send() (*ses.SendRawEmailOutput, error) {
+	return m.SendWithContext( context.Background() )
+}
