@@ -4,15 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	// "io"
-	// "log"
-	
-	// "strings"
-	// "net/mail"
-	// "mime"
-	// "os"
-	// "path/filepath"
-
 	// "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
