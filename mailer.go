@@ -111,11 +111,12 @@ func (m *Mailer) Attach(filename string, data []byte) *Mailer {
 	return m
 }
 
-func (m *Mailer) Dump() {
+func (m *Mailer) Dump() *Mailer {
 	mime, _ := m.builder.Build()
 	defer m.builder.Release( mime )
 
 	fmt.Println( mime.String() ) 
+	return m
 }
 
 func (m *Mailer) SendWithContext( ctx context.Context ) (*ses.SendRawEmailOutput, error) {
