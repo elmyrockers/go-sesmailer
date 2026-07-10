@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	// "io"
-	// "log"
+	"log"
 	
 	// "strings"
 	// "net/mail"
@@ -16,7 +16,7 @@ import (
 	// "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
-	// "github.com/aws/aws-sdk-go-v2/service/ses/types"
+	"github.com/aws/aws-sdk-go-v2/service/ses/types"
 	// "github.com/aws/smithy-go/logging"
 	"github.com/elmyrockers/go-mimebuilder"
 )
@@ -118,4 +118,20 @@ func (m *Mailer) PrintMime() {
 	fmt.Println( mime.String() ) 
 }
 
-func (m *Mailer) Send() {}
+func (m *Mailer) SendWithContext( ctx context.Context ) (*ses.SendRawEmailOutput, error) {
+	// Check error
+		if len(m.errorList)>0 { return _, m.errorList[0] }
+
+	// Get MIME as buffer
+		mime, _ := m.builder.Build()
+		defer m.builder.Release( mime )
+
+	// Send email
+		output, err := m.client.SendRawEmail( ctx, &ses.SendRawEmailInput{
+									RawMessage: &types.RawMessage{
+										Data: mime.Bytes(),
+									},
+								})
+		if err != nil { return _, err }
+	return output, nil
+}
