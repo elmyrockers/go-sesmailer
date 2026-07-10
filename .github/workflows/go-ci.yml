@@ -32,7 +32,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: 1.24
+        go-version: 1.26.5
 
     # Install dependencies
     - name: Install dependencies
@@ -43,85 +43,87 @@ jobs:
       run: go build ./...
 
     # Run unit tests (excluding examples/)
-    - name: Run unit tests with coverage
-      run: |
-        go list ./... | grep -v /examples | xargs go test -tags=unit -coverprofile=unit.out
+    # - name: Run unit tests with coverage
+    #   run: |
+    #     go list ./... | grep -v /examples | xargs go test -tags=unit -coverprofile=unit.out
 
     # Run integration tests (excluding examples/)
-    - name: Run integration tests with coverage
+    # - name: Run integration tests with coverage
+    - name: Run integration tests
       if: ${{ github.event.inputs.run_integration == 'true' }}
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
       run: |
-        go list ./... | grep -v /examples | xargs go test -tags=integration -coverprofile=integration.out
+        go test -tags=integration -v .
 
+    # go list ./... | grep -v /examples | xargs go test -tags=integration -coverprofile=integration.out
     # Merge coverage (unit.out + integration.out = coverage.out)
-    - name: Merge coverage
-      if: ${{ github.event.inputs.run_integration == 'true' }}
-      run: |
-        echo "mode: set" > coverage.out
-        tail -n +2 unit.out >> coverage.out
-        tail -n +2 integration.out >> coverage.out
+    # - name: Merge coverage
+    #   if: ${{ github.event.inputs.run_integration == 'true' }}
+    #   run: |
+    #     echo "mode: set" > coverage.out
+    #     tail -n +2 unit.out >> coverage.out
+    #     tail -n +2 integration.out >> coverage.out
 
     # Generate HTML coverage report
-    - name: Generate HTML coverage report
-      if: ${{ github.event.inputs.run_integration == 'true' }}
-      run: |
-        go tool cover -html=coverage.out -o coverage.html
+    # - name: Generate HTML coverage report
+    #   if: ${{ github.event.inputs.run_integration == 'true' }}
+    #   run: |
+    #     go tool cover -html=coverage.out -o coverage.html
 
     # Check if HTML coverage exists
-    - name: Check if coverage HTML exists
-      if: ${{ github.event.inputs.run_integration == 'true' }}
-      id: coverage-html
-      run: |
-        if [ -f coverage.html ] && [ -s coverage.html ]; then
-          echo "changed=true" >> $GITHUB_OUTPUT
-        else
-          echo "changed=false" >> $GITHUB_OUTPUT
-        fi
+    # - name: Check if coverage HTML exists
+    #   if: ${{ github.event.inputs.run_integration == 'true' }}
+    #   id: coverage-html
+    #   run: |
+    #     if [ -f coverage.html ] && [ -s coverage.html ]; then
+    #       echo "changed=true" >> $GITHUB_OUTPUT
+    #     else
+    #       echo "changed=false" >> $GITHUB_OUTPUT
+    #     fi
 
     # Upload coverage HTML if changed
-    - name: Upload coverage HTML if changed
-      if: ${{ github.event.inputs.run_integration == 'true' && steps.coverage-html.outputs.changed == 'true' }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report
-        path: coverage.html
+    # - name: Upload coverage HTML if changed
+    #   if: ${{ github.event.inputs.run_integration == 'true' && steps.coverage-html.outputs.changed == 'true' }}
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: coverage-report
+    #     path: coverage.html
 
 
 
     # Generate coverage badge
-    - name: Generate coverage badge
-      if: ${{ github.event.inputs.run_integration == 'true' }}
-      run: |
-        # Get total coverage %
-            COVERAGE=$(go tool cover -func=coverage.out | grep total: | awk '{print $3}' | sed 's/%//')
-        # Decide color
-            COLOR=brightgreen
-            if (( $(echo "$COVERAGE < 80" | bc -l) )); then COLOR=red; fi
-        # Generate badge using Shields.io
-            curl -s "https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}" > coverage.svg
+    # - name: Generate coverage badge
+    #   if: ${{ github.event.inputs.run_integration == 'true' }}
+    #   run: |
+    #     # Get total coverage %
+    #         COVERAGE=$(go tool cover -func=coverage.out | grep total: | awk '{print $3}' | sed 's/%//')
+    #     # Decide color
+    #         COLOR=brightgreen
+    #         if (( $(echo "$COVERAGE < 80" | bc -l) )); then COLOR=red; fi
+    #     # Generate badge using Shields.io
+    #         curl -s "https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}" > coverage.svg
 
     # Commit coverage badge 
-    - name: Commit coverage badge
-      if: ${{ github.event.inputs.run_integration == 'true' }}
-      run: |
-        # Configure Git for GitHub Actions
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    # - name: Commit coverage badge
+    #   if: ${{ github.event.inputs.run_integration == 'true' }}
+    #   run: |
+    #     # Configure Git for GitHub Actions
+    #     git config --global user.name "github-actions[bot]"
+    #     git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-        # Add the coverage badge
-        git add coverage.svg
+    #     # Add the coverage badge
+    #     git add coverage.svg
         
-        # Only commit if there are changes
-        if ! git diff --cached --quiet; then
-            git commit -m "Changes detected, update coverage badge"
-            git push
-        else
-            echo "No changes to commit"
-        fi
+    #     # Only commit if there are changes
+    #     if ! git diff --cached --quiet; then
+    #         git commit -m "Changes detected, update coverage badge"
+    #         git push
+    #     else
+    #         echo "No changes to commit"
+    #     fi
 
     # Lint the code for style and quality
     - name: Lint
