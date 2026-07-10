@@ -117,3 +117,5 @@ func (m *Mailer) PrintMime() {
 
 	fmt.Println( mime.String() ) 
 }
+
+func (m *Mailer) Send() {}
