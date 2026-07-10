@@ -106,7 +106,14 @@ func (m *Mailer) Embed(name string, data []byte, cid string) *Mailer {
 	return m
 }
 
-func (m *Mailer) Attach(filename string, data []byte) *MimeBuilder {
+func (m *Mailer) Attach(filename string, data []byte) *Mailer {
 	m.builder.Attach( filename, data )
 	return m
+}
+
+func (m *Mailer) PrintMime() {
+	mime, _ := m.builder.Build()
+	defer m.builder.Release( mime )
+
+	fmt.Println( mime.String() ) 
 }
