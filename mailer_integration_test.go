@@ -7,6 +7,8 @@ import (
 	"os"
 	"fmt"
 	"time"
+	"io"
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,6 +24,46 @@ func TestMailer_New(t *testing.T) {
 	assert.NotNil(t, mailer.client, "expected SES client to be initialized")
 	assert.NotNil(t, mailer.builder, "expected mime builder to be initialized")
 	assert.Empty(t, mailer.errorList, "expected no errors when AWS config loads successfully")
+}
+
+func TestMailer_Dump( t *testing.T ) {
+	mailer := New()
+		require.NotNil(t, mailer, "New() should return a non-nil Mailer")
+
+	mailer.SetFrom( "noreply@xeno.com.my", "Xeno System").
+			AddReplyTo( "info@xeno.com.my", "Xeno Admin" ).
+			AddTo( "elmyrockers@gmail.com", "Developer").
+			AddCC( "elmyrockers2@gmail.com", "Maintainer").
+			AddBCC( "elmyrockers3@gmail.com", "Project Manager").
+			SetSubject("sesmailer integration test - Dump").
+			SetBody("This body is only used to verify Dump() builds and prints the MIME message.")
+
+	// Capture stdout since Dump() uses fmt.Println directly
+		oldStdout := os.Stdout
+		r, w, err := os.Pipe()
+		require.NoError(t, err, "failed to create os pipe")
+		os.Stdout = w
+
+			result := mailer.Dump()
+
+		w.Close()
+		os.Stdout = oldStdout
+
+	// Read captured stdout
+		var buf bytes.Buffer
+		_, err = io.Copy(&buf, r)
+		require.NoError(t, err, "failed to read captured stdout")
+		output := buf.String()
+
+	assert.Same(t, mailer, result, "Dump should return the same *Mailer for chaining")
+	assert.Contains(t, output, "Subject:", "expected dumped MIME to contain a Subject header")
+	assert.Contains(t, output, "From:", "expected dumped MIME to contain a From header")
+	assert.Contains(t, output, "Reply-To:", "expected dumped MIME to contain a Reply-To header")
+	assert.Contains(t, output, "To:", "expected dumped MIME to contain a To header")
+	assert.Contains(t, output, "Cc:", "expected dumped MIME to contain a Cc header")
+	assert.Contains(t, output, "Bcc:", "expected dumped MIME to contain a Bcc header")
+	assert.Contains(t, output, "elmyrockers@gmail.com", "expected dumped MIME to contain the recipient address")
+	assert.NotEmpty(t, output, "expected Dump to print something to stdout")
 }
 
 func TestMailer_SendPlainText( t *testing.T ) {
