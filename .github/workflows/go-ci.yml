@@ -20,7 +20,7 @@ permissions:
   contents: write
 
 jobs:
-  test:
+  Test:
     runs-on: ubuntu-latest
 
     steps:
@@ -47,17 +47,16 @@ jobs:
     #   run: |
     #     go list ./... | grep -v /examples | xargs go test -tags=unit -coverprofile=unit.out
 
-    # Run integration tests (excluding examples/)
-    # - name: Run integration tests with coverage
-    - name: Run integration tests
+    # Run integration tests
+    - name: Run integration tests with coverage
       if: ${{ github.event.inputs.run_integration == 'true' }}
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
-      run: |
-        go test -tags=integration -v .
+      run: ./run_tests.sh
 
+    # go test -tags=integration -v .
     # go list ./... | grep -v /examples | xargs go test -tags=integration -coverprofile=integration.out
     # Merge coverage (unit.out + integration.out = coverage.out)
     # - name: Merge coverage
