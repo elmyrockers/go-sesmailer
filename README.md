@@ -31,11 +31,10 @@ Tiny wrapper around the AWS SES SDK for Go to simplify sending emails with a flu
 ## Security Highlights
 
 - **Production-Ready:** Fully tested and safe for use in production environments.
-- **Header Injection Protection:** All headers sanitized to remove CR, LF, null, and control characters (via go-mimebuilder).
-- **RFC 5322 Compliant:** Header lengths truncated at 998 bytes safely, UTF-8 aware.
-- **Safe Email Addresses:** Validated and properly encoded display names.
-- **Attachment Security:** Filenames sanitized; data base64-encoded before transmission.
-- **Body Encoding:** Quoted-printable encoding ensures safe transmission of non-ASCII content.
+- **Header Injection Protection:** All headers (From, To, Cc, Bcc, Reply-To, Subject) sanitized to strip CR and LF characters, preventing header injection attacks.
+- **RFC 2047 Subject Encoding:** Non-ASCII subjects are Q-encoded and safely folded across multiple lines to avoid breaking multi-byte UTF-8 characters.
+- **Attachment Security:** Filenames sanitized before use in headers; attachment data base64-encoded with proper MIME line wrapping.
+- **Body Encoding:** Quoted-printable encoding (RFC 2045) ensures safe transmission of non-ASCII body content, with line wrapping at 72 characters.
 - **AWS SES Secure Delivery:** Uses official SDK v2 with TLS and signed requests.
 
 ## Installation
