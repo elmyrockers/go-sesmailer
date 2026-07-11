@@ -10,7 +10,7 @@ COVERAGE_SVG="img/coverage.svg"
 
 # Run integration test
 	echo "==> Running integration tests"
-	go test -tags=integration -v -coverprofile="${COVERAGE_FILE}" -covermode=atomic ./...
+	go test -tags=integration -v -coverprofile="${COVERAGE_FILE}" -covermode=atomic .
 
 	echo "==> Coverage summary"
 	go tool cover -func="${COVERAGE_FILE}"
