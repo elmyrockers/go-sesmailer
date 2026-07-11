@@ -2,10 +2,10 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/elmyrockers/go-sesmailer.svg)](https://pkg.go.dev/github.com/elmyrockers/go-sesmailer)
 [![Go Version](https://img.shields.io/badge/go1.20+-00ADD8?logo=go&logoColor=white)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-<!-- [![Release](https://img.shields.io/github/v/release/elmyrockers/go-sesmailer)](https://github.com/elmyrockers/go-sesmailer/releases) -->
 ![Build / CI](https://github.com/elmyrockers/go-sesmailer/actions/workflows/go-ci.yml/badge.svg)
 ![Coverage](coverage.svg)
 ![AWS SES](amazon-ses.jpg)
+<!-- [![Release](https://img.shields.io/github/v/release/elmyrockers/go-sesmailer)](https://github.com/elmyrockers/go-sesmailer/releases) -->
 
 Minimal wrapper around the AWS SES SDK for Go to simplify sending emails with a PHPMailer-like API.
 
