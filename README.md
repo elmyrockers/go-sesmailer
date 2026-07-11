@@ -18,7 +18,7 @@ Tiny wrapper around the AWS SES SDK for Go to simplify sending emails with a flu
 - Uses the **Amazon SES API** instead of SMTP for better performance and faster delivery.
 - Provides **improved security** by using AWS IAM authentication instead of SMTP credentials.
 - **Fluent method chaining** for clean and readable email construction.
-- MIME message building powered by ***go-mimebuilder***, a **zero-allocation in the *`hot path`*** library.
+- MIME message building powered by ***go-mimebuilder***, a **zero-allocation** in the *`hot path`* library.
 - Supports **HTML and plain text emails**.
 - **Plain text fallback (`AltBody`)** for HTML emails.
 - Supports **multiple recipients**: To, CC, and BCC.
