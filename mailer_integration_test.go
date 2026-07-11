@@ -4,6 +4,9 @@
 package sesmailer
 
 import (
+	// "path/filepath"
+	// "context"
+
 	"os"
 	"fmt"
 	"time"
@@ -15,6 +18,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/elmyrockers/go-mimebuilder"
 )
 
 func TestMailer_New(t *testing.T) {
@@ -163,4 +167,28 @@ func TestMailer_SendHtmlWithEmbeds( t *testing.T ) {
 	assert.NotEmpty(t, output.MessageId)
 
 	t.Logf("Sent HTML+embeds email, MessageId=%s", *output.MessageId)
+}
+
+func TestMailer_Send_Error( t *testing.T ) {
+	t.Run("errorList already populated", func(t *testing.T) {
+		mailer := &Mailer{
+			errorList: []error{fmt.Errorf("simulated config load failure")},
+			builder:   mimebuilder.New(),
+		}
+
+		output, err := mailer.Send()
+		require.Error(t, err, "expected Send to return the pre-existing error from errorList")
+		assert.Equal(t, mailer.errorList[0], err, "expected Send to return the exact first error from errorList")
+		assert.Nil(t, output, "expected nil output when errorList is non-empty")
+	})
+
+	t.Run("Send with no headers set", func(t *testing.T) {
+		mailer := New()
+		require.NotNil(t, mailer, "New() should return a non-nil Mailer")
+
+		// No SetFrom, no AddTo, no SetSubject, no SetBody — send immediately
+			output, err := mailer.Send()
+			require.Error(t, err, "expected Send to return an error when no headers/recipients are set")
+			assert.Nil(t, output, "expected nil output when Send fails due to missing headers")
+	})
 }
