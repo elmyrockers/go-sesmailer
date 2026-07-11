@@ -40,7 +40,7 @@ COVERAGE_SVG="coverage.svg"
 	if git diff --cached --quiet; then
 		echo "==> No changes to commit (coverage unchanged)"
 	else
-		git commit -m "chore: update coverage badge (${COVERAGE}%)"
+		git commit -m "Auto: update coverage badge (${COVERAGE}%)"
 		git push
 	fi
 
