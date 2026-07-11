@@ -6,7 +6,7 @@ set -euo pipefail
 
 
 COVERAGE_FILE="coverage.out"
-COVERAGE_SVG="coverage.svg"
+COVERAGE_SVG="img/coverage.svg"
 
 # Run integration test
 	echo "==> Running integration tests"
