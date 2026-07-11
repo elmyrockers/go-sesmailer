@@ -28,6 +28,25 @@ Tiny wrapper around the AWS SES SDK for Go to simplify sending emails with a flu
 - Supports **context-based sending** (`SendWithContext`) for cancellation and timeouts.
 - Automatically loads **AWS configuration** from the default environment.
 
+
+
+
+
+- **Lightweight and tiny wrapper** around Amazon SES.
+- Built on top of the **official AWS SDK for Go v2**.
+- Uses the **Amazon SES API** instead of SMTP for better performance and faster delivery.
+- Provides **improved security** by using AWS IAM authentication instead of SMTP credentials.
+- **Fluent method chaining** for clean and readable email construction.
+- MIME message building powered by [go-mimebuilder](https://github.com/elmyrockers/go-mimebuilder), a **zero-allocation in the `hot path`** library.
+- Supports **HTML and plain text emails**.
+- **Plain text fallback (`AltBody`)** for HTML emails.
+- Supports **multiple recipients**: To, CC, and BCC.
+- Supports **Reply-To headers**.
+- Supports **inline embedded content** (e.g. images) via `Embed`, referenced in HTML using `cid:`.
+- Supports **file attachments** via `Attach`.
+- Supports **context-based sending** (`SendWithContext`) for cancellation and timeouts.
+- Automatically loads **AWS configuration** from the default environment.
+
 ## Security Highlights
 
 - **Production-Ready:** Fully tested and safe for use in production environments.
