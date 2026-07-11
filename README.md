@@ -9,7 +9,7 @@
 
 Minimal wrapper around the AWS SES SDK for Go to simplify sending emails with a fluent, chainable API.
 
-go-sesmailer provides a simple and developer-friendly interface to send emails using AWS Simple Email Service (SES). It supports adding multiple recipients, CC, BCC, Reply-To addresses, and sending both HTML and plain text emails. Its fluent API makes it easy to integrate into Go projects, including web frameworks like Fiber.
+**go-sesmailer** provides a simple and developer-friendly interface to send emails using **AWS Simple Email Service (SES)**. It supports adding multiple recipients, CC, BCC, Reply-To addresses, and sending both HTML and plain text emails. MIME message construction is handled internally by `go-mimebuilder`, a **zero-allocation-in-the-hot-path** library, keeping message building fast and memory-efficient. Its fluent API makes it easy to integrate into Go projects, including web frameworks like Fiber.
 
 ## Features
 
