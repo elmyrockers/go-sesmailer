@@ -4,11 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	// "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
-	// "github.com/aws/smithy-go/logging"
 	"github.com/elmyrockers/go-mimebuilder"
 )
 
