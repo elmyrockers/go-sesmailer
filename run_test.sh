@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# run_tests.sh
 # Runs integration tests, generates a coverage badge via shields.io,
 # and pushes the result to the current repo.
 
