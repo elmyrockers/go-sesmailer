@@ -167,18 +167,20 @@ if err != nil {
 |------|-------------|
 | `New() *Mailer` | Creates a new `Mailer` instance and automatically initializes the AWS SES client using the default AWS configuration. |
 | `SetFrom(email string, name string) *Mailer` | Sets the sender email address and optional display name. |
-| `AddAddress(email string, name string) *Mailer` | Adds a recipient to the **To** list. |
+| `AddTo(email string, name string) *Mailer` | Adds a recipient to the **To** list. |
+| `AddAddress(email string, name string) *Mailer` | Alias for `AddTo` - adds a recipient to the **To** list. |
 | `AddCC(email string, name string) *Mailer` | Adds a recipient to the **CC** list. |
 | `AddBCC(email string, name string) *Mailer` | Adds a recipient to the **BCC** list. |
 | `AddReplyTo(email string, name string) *Mailer` | Adds an email address to the **Reply-To** header. |
 | `SetSubject(subject string) *Mailer` | Sets the email subject line. |
 | `SetBody(body string) *Mailer` | Sets the main email body content. |
 | `SetAltBody(alt string) *Mailer` | Sets an alternative plain-text body when sending HTML emails. |
-| `AddAttachment(path string, name string) *Mailer` | Adds an attachment via **streaming**. Uses `io.Reader` (**32KB chunks**) for **low memory usage** and **performance**. Automatically **closes file handles** after sending. |
-| `IsHTML(isHtml bool) *Mailer` | Sets whether the email content type should be `text/html` or `text/plain`. |
-| `SetDebug(level int) *Mailer` | Enables debug logging. `0 = disabled`, `1 = errors/retries`, `2 = verbose request/response logs`. |
-| `Send() error` | Sends the email using a default background context. |
-| `SendContext(ctx context.Context) error` | Sends the email using a custom context. Useful for timeouts, cancellations, or request tracing. |
+| `AsHTML() *Mailer` | Marks the email content type as `text/html` instead of `text/plain`. |
+| `Embed(name string, data []byte, cid string) *Mailer` | Embeds inline content (e.g. an image) referenced in the HTML body via `cid:` - the image displays inline rather than as a downloadable attachment. |
+| `Attach(filename string, data []byte) *Mailer` | Adds a file attachment from raw bytes. |
+| `Dump() *Mailer` | Builds the MIME message and prints it to stdout, without sending. Useful for debugging. |
+| `Send() (*ses.SendRawEmailOutput, error)` | Sends the email using a default background context. Returns the SES API response and any error. |
+| `SendWithContext(ctx context.Context) (*ses.SendRawEmailOutput, error)` | Sends the email using a custom context - useful for timeouts, cancellations, or request tracing. |
 
 
 
