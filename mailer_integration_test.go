@@ -32,7 +32,7 @@ func TestMailer_Dump( t *testing.T ) {
 
 	mailer.SetFrom( "noreply@xeno.com.my", "Xeno System").
 			AddReplyTo( "info@xeno.com.my", "Xeno Admin" ).
-			AddTo( "elmyrockers@gmail.com", "Developer").
+			AddAddress( "elmyrockers@gmail.com", "Developer").
 			AddCC( "elmyrockers2@gmail.com", "Maintainer").
 			AddBCC( "elmyrockers3@gmail.com", "Project Manager").
 			SetSubject("sesmailer integration test - Dump").
