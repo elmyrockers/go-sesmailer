@@ -1,6 +1,6 @@
 # go-sesmailer
 [![Go Reference](https://pkg.go.dev/badge/github.com/elmyrockers/go-sesmailer.svg)](https://pkg.go.dev/github.com/elmyrockers/go-sesmailer)
-[![Go Version](https://img.shields.io/badge/go1.20+-00ADD8?logo=go&logoColor=white)](https://golang.org)
+[![Go Version](https://img.shields.io/badge/go1.26+-00ADD8?logo=go&logoColor=white)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![Build / CI](https://github.com/elmyrockers/go-sesmailer/actions/workflows/go-ci.yml/badge.svg)
 ![Coverage](coverage.svg)
