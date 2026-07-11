@@ -4,6 +4,7 @@
 package sesmailer
 
 import (
+	"os"
 	"fmt"
 	"time"
 	"testing"
@@ -37,7 +38,7 @@ func TestMailer_SendPlainText( t *testing.T ) {
 			AddCC( "elmyrockers2@gmail.com", "Maintainer").
 			AddBCC( "elmyrockers3@gmail.com", "Project Manager").
 			SetSubject(subject).
-			
+
 			SetBody("This is a plain text integration test email.").
 			Send()
 
@@ -54,12 +55,12 @@ func TestMailer_SendHtmlWithAttachments( t *testing.T ) {
 		require.NotNil(t, mailer, "New() should return a non-nil Mailer")
 
 	// Get image data in bytes
-		catImg, err := os.ReadFile("/examples/attachment/cat.webp")
-			if err != nil { log.Fatal(err) }
-		rabbitImg, err := os.ReadFile("/examples/attachment/rabbit.jpg")
-			if err != nil { log.Fatal(err) }
-		dogImg, err := os.ReadFile("/examples/attachment/dog.jpg")
-			if err != nil { log.Fatal(err) }
+		catImg, err := os.ReadFile("examples/attachment/cat.webp")
+				require.NoError(t, err, "failed to read cat.webp")
+		rabbitImg, err := os.ReadFile("examples/attachment/rabbit.jpg")
+				require.NoError(t, err, "failed to read rabbit.jpg")
+		dogImg, err := os.ReadFile("examples/attachment/dog.jpg")
+				require.NoError(t, err, "failed to read dog.jpg")
 
 	// Test: add mime headers and body then send
 		subject := fmt.Sprintf("sesmailer integration test - html+attachment - %d", time.Now().UnixNano())
