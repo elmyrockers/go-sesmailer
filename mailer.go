@@ -108,7 +108,7 @@ func (m *Mailer) Dump() *Mailer {
 	return m
 }
 
-func (m *Mailer) SendWithContext( ctx context.Context ) (*ses.SendRawEmailOutput, error) {
+func (m *Mailer) SendWithContext( ctx context.Context ) ( string, error) {
 	// Check error
 		if len(m.errorList)>0 { return nil, m.errorList[0] }
 
@@ -123,9 +123,9 @@ func (m *Mailer) SendWithContext( ctx context.Context ) (*ses.SendRawEmailOutput
 									},
 								})
 		if err != nil { return nil, err }
-	return output, nil
+	return output.MessageId, nil
 }
 
-func (m *Mailer) Send() (*ses.SendRawEmailOutput, error) {
+func (m *Mailer) Send() ( string, error) {
 	return m.SendWithContext( context.Background() )
 }
