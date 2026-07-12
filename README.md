@@ -39,7 +39,7 @@ Tiny wrapper around the AWS SES SDK for Go to simplify sending emails with a flu
 
 ## Installation
 ```bash
-go get github.com/elmyrockers/go-sesmailer
+go get github.com/elmyrockers/go-sesmailer@latest
 ```
 > Make sure you have your AWS credentials set in the environment variables (***AWS_ACCESS_KEY_ID***, ***AWS_SECRET_ACCESS_KEY*** and ***AWS_REGION***) or through your AWS config.
 > During development, you can create a `.env` file next to your `main.go` and load it using the `joho/godotenv` library:
