@@ -186,7 +186,9 @@ messageID, err := builder.SetFrom("no-reply@yourcompany.com", "Your Company").
                             Send()
 if err != nil {
     log.Fatalf("Failed to send email: %v", err)
+    return
 }
+log.Println("Sent! ID:", messageID)
 ```
 ***
 ## API Reference
