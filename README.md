@@ -95,65 +95,95 @@ func main() {
 
 ### 2. Sending HTML Email with Plain Text Fallback:
 ```go
-err := sesmailer.New().
-    SetFrom("no-reply@yourcompany.com", "Your Company").
-    AddAddress("helmi@xeno.com.my", "Helmi Aziz").
-    SetSubject("HTML Email Example").
-    SetBody("<h1>Hello</h1><p>This is an HTML email.</p>").
-    SetAltBody("Hello! This is a plain text version.").
-    IsHTML(true).
-    Send()
+builder := sesmailer.New()
 
+messageID, err := builder.SetFrom("no-reply@yourcompany.com", "Your Company").
+                            AddTo("helmi@xeno.com.my", "Helmi Aziz").
+                            SetSubject("HTML Email Example").
+                            SetBody("<h1>Hello</h1><p>This is an HTML email.</p>").
+                            AsHTML().
+                            SetAltBody("Hello! This is a plain text version.").
+                            Send()
 if err != nil {
     log.Fatalf("Failed to send email: %v", err)
+    return
 }
+log.Println("Sent! ID:", messageID)
 ```
 
 
 ### 3. Adding CC, BCC, and Reply-To:
 ```go
-err := sesmailer.New().
-    SetFrom("no-reply@yourcompany.com", "Your Company").
-    AddAddress("helmi@xeno.com.my", "Helmi Aziz").
-    AddCC("admin@yourcompany.com", "Administrator").
-    AddBCC("your-private-email@gmail.com", "").
-    AddReplyTo("admin@yourcompany.com", "Administrator").
-    SetSubject("Email with CC/BCC/ReplyTo").
-    SetBody("This email has CC, BCC, and Reply-To addresses.").
-	Send()
+builder := sesmailer.New()
 
+messageID, err := builder.SetFrom("no-reply@yourcompany.com", "Your Company").
+                            AddTo("helmi@xeno.com.my", "Helmi Aziz").
+                            AddCC("admin@yourcompany.com", "Administrator").
+                            AddBCC("your-private-email@gmail.com", "").
+                            AddReplyTo("admin@yourcompany.com", "Administrator").
+                            SetSubject("Email with CC/BCC/ReplyTo").
+                            SetBody("This email has CC, BCC, and Reply-To addresses.").
+                        	Send()
 if err != nil {
     log.Fatalf("Failed to send email: %v", err)
+    return
 }
+log.Println("Sent! ID:", messageID)
 ```
 
 ### 4. Email with Attachments
 ```go
-err := sesmailer.New().
-    SetFrom("no-reply@yourcompany.com", "Your Company").
-    AddAddress("helmi@xeno.com.my", "Helmi Aziz").
-    SetSubject("Email with Attachments").
-    SetBody("This email will include a few attachments").
-    
-    AddAttachment("docs/invoice_123.pdf", "Invoice.pdf").
-    AddAttachment("images/logo.png", "CompanyLogo.png").
-    Send()
+package main
 
-if err != nil {
-    log.Fatalf("Failed to send email: %v", err)
+import (
+    _ "github.com/joho/godotenv/autoload"
+    "github.com/elmyrockers/go-sesmailer"
+    "log"
+    "os"
+)
+
+func main() {
+    builder := sesmailer.New()
+
+    // Read files as attachments
+            invoiceFile, err := os.ReadFile("docs/invoice_123.pdf")
+                                    if err != nil {
+                                        log.Fatalf("Failed to read attachment: %v", err)
+                                        return
+                                    }
+            logoFile, err := os.ReadFile("images/logo.png")
+                                    if err != nil {
+                                        log.Fatalf("Failed to read attachment: %v", err)
+                                        return
+                                    }
+
+    // Build MIME header and body, then send
+        messageID, err := builder.SetFrom("no-reply@yourcompany.com", "Your Company").
+                                    AddTo("helmi@xeno.com.my", "Helmi Aziz").
+                                    SetSubject("Email with Attachments").
+                                    SetBody("This email will include a few attachments").
+                                    
+                                    Attach("invoice.pdf", invoiceFile).
+                                    Attach("logo.png", logoFile).
+                                    Send()
+        if err != nil {
+            log.Fatalf("Failed to send email: %v", err)
+            return
+        }
+        log.Println("Sent! ID:", messageID)
 }
 ```
 
-### 5. Enabling Debug Logging:
+### 5. Dump Raw MIME (For Debugging):
 ```go
-err := sesmailer.New().
-    SetFrom("no-reply@yourcompany.com", "Your Company").
-    AddAddress("helmi@xeno.com.my", "Helmi Aziz").
-    SetSubject("Debug Email").
-    SetBody("This email will show debug info").
-    SetDebug(2). // 0 = none, 1 = errors, 2 = verbose
-	Send()
+builder := sesmailer.New()
 
+messageID, err := builder.SetFrom("no-reply@yourcompany.com", "Your Company").
+                            AddTo("helmi@xeno.com.my", "Helmi Aziz").
+                            SetSubject("Debug Email").
+                            SetBody("This email will show debug info").
+                            Dump().
+                            Send()
 if err != nil {
     log.Fatalf("Failed to send email: %v", err)
 }
