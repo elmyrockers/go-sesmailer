@@ -32,7 +32,7 @@ COVERAGE_SVG="img/coverage.svg"
 
 # Fetch coverage badge
 	echo "==> Fetching coverage badge from shields.io"
-	curl -s "https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}" > "${COVERAGE_SVG}"
+	curl -s "https://img.shields.io/badge/Coverage-${COVERAGE}%25-${COLOR}" > "${COVERAGE_SVG}"
 
 # Commit it to repo
 	echo "==> Committing and pushing results"
