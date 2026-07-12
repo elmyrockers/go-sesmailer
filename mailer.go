@@ -110,7 +110,7 @@ func (m *Mailer) Dump() *Mailer {
 
 func (m *Mailer) SendWithContext( ctx context.Context ) ( string, error) {
 	// Check error
-		if len(m.errorList)>0 { return nil, m.errorList[0] }
+		if len(m.errorList)>0 { return "", m.errorList[0] }
 
 	// Get MIME as buffer
 		mime, _ := m.builder.Build()
@@ -122,8 +122,8 @@ func (m *Mailer) SendWithContext( ctx context.Context ) ( string, error) {
 										Data: mime.Bytes(),
 									},
 								})
-		if err != nil { return nil, err }
-	return output.MessageId, nil
+		if err != nil { return "", err }
+	return *output.MessageId, nil
 }
 
 func (m *Mailer) Send() ( string, error) {
