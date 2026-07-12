@@ -77,22 +77,21 @@ func TestMailer_SendPlainText( t *testing.T ) {
 
 	// Test: add mime headers and body then send
 		subject := fmt.Sprintf("sesmailer integration test - plain text - %d", time.Now().UnixNano())
-		output, err := mailer.
-			SetFrom( "noreply@xeno.com.my", "Xeno System").
-			AddReplyTo( "info@xeno.com.my", "Xeno Admin" ).
-			AddTo( "elmyrockers@gmail.com", "Developer").
-			AddCC( "elmyrockers2@gmail.com", "Maintainer").
-			AddBCC( "elmyrockers3@gmail.com", "Project Manager").
-			SetSubject(subject).
+		messageID, err := mailer.
+							SetFrom( "noreply@xeno.com.my", "Xeno System").
+							AddReplyTo( "info@xeno.com.my", "Xeno Admin" ).
+							AddTo( "elmyrockers@gmail.com", "Developer").
+							AddCC( "elmyrockers2@gmail.com", "Maintainer").
+							AddBCC( "elmyrockers3@gmail.com", "Project Manager").
+							SetSubject(subject).
 
-			SetBody("This is a plain text integration test email.").
-			Send()
+							SetBody("This is a plain text integration test email.").
+							Send()
 
 		require.NoError(t, err, "expected Send to succeed")
-		require.NotNil(t, output)
-		assert.NotEmpty(t, output.MessageId)
+		assert.NotEmpty(t, messageID, "expected a non-empty MessageId")
 
-		t.Logf("Sent plain text email, MessageId=%s", *output.MessageId)
+		t.Logf("Sent plain text email, MessageId=%s", messageID)
 }
 
 func TestMailer_SendHtmlWithAttachments( t *testing.T ) {
@@ -110,26 +109,25 @@ func TestMailer_SendHtmlWithAttachments( t *testing.T ) {
 
 	// Test: add mime headers and body then send
 		subject := fmt.Sprintf("sesmailer integration test - html+attachments - %d", time.Now().UnixNano())
-		output, err := mailer.
-			SetFrom( "noreply@xeno.com.my", "Xeno System").
-			AddReplyTo( "info@xeno.com.my", "Xeno Admin" ).
-			AddTo( "elmyrockers@gmail.com", "Developer").
-			AddCC( "elmyrockers2@gmail.com", "Maintainer").
-			AddBCC( "elmyrockers3@gmail.com", "Project Manager").
-			SetSubject(subject).
+		messageID, err := mailer.
+							SetFrom( "noreply@xeno.com.my", "Xeno System").
+							AddReplyTo( "info@xeno.com.my", "Xeno Admin" ).
+							AddTo( "elmyrockers@gmail.com", "Developer").
+							AddCC( "elmyrockers2@gmail.com", "Maintainer").
+							AddBCC( "elmyrockers3@gmail.com", "Project Manager").
+							SetSubject(subject).
 
-			SetBody("<h1>Hello</h1><p>This email has attachments.</p>").AsHTML().
-			SetAltBody("Hello. This is the plain text fallback.").
-			Attach("cat.webp", catImg).
-			Attach("rabbit.jpg", rabbitImg).
-			Attach("dog.jpg", dogImg).
-			Send()
+							SetBody("<h1>Hello</h1><p>This email has attachments.</p>").AsHTML().
+							SetAltBody("Hello. This is the plain text fallback.").
+							Attach("cat.webp", catImg).
+							Attach("rabbit.jpg", rabbitImg).
+							Attach("dog.jpg", dogImg).
+							Send()
 
 	require.NoError(t, err, "expected Send to succeed")
-	require.NotNil(t, output)
-	assert.NotEmpty(t, output.MessageId)
+	assert.NotEmpty(t, messageID, "expected a non-empty MessageId")
 
-	t.Logf("Sent HTML+attachments email, MessageId=%s", *output.MessageId)
+	t.Logf("Sent HTML+attachments email, MessageId=%s", messageID)
 }
 
 func TestMailer_SendHtmlWithEmbeds( t *testing.T ) {
@@ -147,26 +145,25 @@ func TestMailer_SendHtmlWithEmbeds( t *testing.T ) {
 
 	// Test: add mime headers and body then send
 		subject := fmt.Sprintf("sesmailer integration test - html+embeds - %d", time.Now().UnixNano())
-		output, err := mailer.
-			SetFrom( "noreply@xeno.com.my", "Xeno System").
-			AddReplyTo( "info@xeno.com.my", "Xeno Admin" ).
-			AddTo( "elmyrockers@gmail.com", "Developer").
-			AddCC( "elmyrockers2@gmail.com", "Maintainer").
-			AddBCC( "elmyrockers3@gmail.com", "Project Manager").
-			SetSubject(subject).
+		messageID, err := mailer.
+							SetFrom( "noreply@xeno.com.my", "Xeno System").
+							AddReplyTo( "info@xeno.com.my", "Xeno Admin" ).
+							AddTo( "elmyrockers@gmail.com", "Developer").
+							AddCC( "elmyrockers2@gmail.com", "Maintainer").
+							AddBCC( "elmyrockers3@gmail.com", "Project Manager").
+							SetSubject(subject).
 
-			SetBody("<h1>Hello</h1><p>This email has embeds.</p><img src='cid:cat'/><img src='cid:rabbit'/><img src='cid:dog'/>").AsHTML().
-			SetAltBody("Hello. This is the plain text fallback.").
-			Embed("cat.webp", catImg, "cat").
-			Embed("rabbit.jpg", rabbitImg, "rabbit").
-			Embed("dog.jpg", dogImg, "dog").
-			Send()
+							SetBody("<h1>Hello</h1><p>This email has embeds.</p><img src='cid:cat'/><img src='cid:rabbit'/><img src='cid:dog'/>").AsHTML().
+							SetAltBody("Hello. This is the plain text fallback.").
+							Embed("cat.webp", catImg, "cat").
+							Embed("rabbit.jpg", rabbitImg, "rabbit").
+							Embed("dog.jpg", dogImg, "dog").
+							Send()
 
 	require.NoError(t, err, "expected Send to succeed")
-	require.NotNil(t, output)
-	assert.NotEmpty(t, output.MessageId)
+	assert.NotEmpty(t, messageID, "expected a non-empty MessageId")
 
-	t.Logf("Sent HTML+embeds email, MessageId=%s", *output.MessageId)
+	t.Logf("Sent HTML+embeds email, MessageId=%s", messageID)
 }
 
 func TestMailer_Send_Error( t *testing.T ) {
@@ -176,10 +173,10 @@ func TestMailer_Send_Error( t *testing.T ) {
 			builder:   mimebuilder.New(),
 		}
 
-		output, err := mailer.Send()
+		messageID, err := mailer.Send()
 		require.Error(t, err, "expected Send to return the pre-existing error from errorList")
 		assert.Equal(t, mailer.errorList[0], err, "expected Send to return the exact first error from errorList")
-		assert.Nil(t, output, "expected nil output when errorList is non-empty")
+		assert.Empty(t, messageID, "expected empty messageID when errorList is non-empty")
 	})
 
 	t.Run("Send with no headers set", func(t *testing.T) {
@@ -187,8 +184,8 @@ func TestMailer_Send_Error( t *testing.T ) {
 		require.NotNil(t, mailer, "New() should return a non-nil Mailer")
 
 		// No SetFrom, no AddTo, no SetSubject, no SetBody — send immediately
-			output, err := mailer.Send()
+			messageID, err := mailer.Send()
 			require.Error(t, err, "expected Send to return an error when no headers/recipients are set")
-			assert.Nil(t, output, "expected nil output when Send fails due to missing headers")
+			assert.Empty(t, messageID, "expected empty messageID when Send fails due to missing headers")
 	})
 }
