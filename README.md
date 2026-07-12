@@ -177,7 +177,7 @@ if err != nil {
 | `Embed(name string, data []byte, cid string) *Mailer` | Embeds inline content (e.g. an image) referenced in the HTML body via `cid:` - the image displays inline rather than as a downloadable attachment. |
 | `Attach(filename string, data []byte) *Mailer` | Adds a file attachment from raw bytes. |
 | `Dump() *Mailer` | Builds the MIME message and prints it to stdout, without sending. Useful for debugging. |
-| `Send() (string, error)` | Sends the email using a default background context. Returns the SES API response and any error. |
+| `Send() (string, error)` | Sends the email using a default background context. Returns the SES MessageID and any error. |
 | `SendWithContext(ctx context.Context) ( string, error)` | Sends the email using a custom context - useful for timeouts, cancellations, or request tracing. |
 
 
