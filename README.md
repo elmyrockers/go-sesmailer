@@ -75,19 +75,19 @@ import (
 )
 
 func main() {
-    err := sesmailer.New().
-        SetFrom("no-reply@yourcompany.com", "Your Company").
-        AddAddress("helmi@xeno.com.my", "Helmi Aziz").
-        SetSubject("Test Email").
-        SetBody("Hello! This is a test email.").
-        IsHTML(false).
-        Send()
+    builder := sesmailer.New()
 
+    messageID, err := builder.SetFrom("no-reply@yourcompany.com", "Your Company").
+                                AddTo("helmi@xeno.com.my", "Helmi Aziz").
+                                SetSubject("Test Email").
+                                SetBody("Hello! This is a test email.").
+                                Send()
     if err != nil {
         log.Fatalf("Failed to send email: %v", err)
+        return
     }
 
-    log.Println("Email sent successfully")
+    log.Println( "Email sent successfully!\nID: ", messageID )
 }
 
 ```
@@ -177,8 +177,8 @@ if err != nil {
 | `Embed(name string, data []byte, cid string) *Mailer` | Embeds inline content (e.g. an image) referenced in the HTML body via `cid:` - the image displays inline rather than as a downloadable attachment. |
 | `Attach(filename string, data []byte) *Mailer` | Adds a file attachment from raw bytes. |
 | `Dump() *Mailer` | Builds the MIME message and prints it to stdout, without sending. Useful for debugging. |
-| `Send() (*ses.SendRawEmailOutput, error)` | Sends the email using a default background context. Returns the SES API response and any error. |
-| `SendWithContext(ctx context.Context) (*ses.SendRawEmailOutput, error)` | Sends the email using a custom context - useful for timeouts, cancellations, or request tracing. |
+| `Send() (string, error)` | Sends the email using a default background context. Returns the SES API response and any error. |
+| `SendWithContext(ctx context.Context) ( string, error)` | Sends the email using a custom context - useful for timeouts, cancellations, or request tracing. |
 
 
 
