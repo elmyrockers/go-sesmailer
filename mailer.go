@@ -100,6 +100,11 @@ func (m *Mailer) Attach(filename string, data []byte) *Mailer {
 	return m
 }
 
+func (m *Mailer) AttachFile(filename string, path string) *Mailer {
+	m.builder.AttachFile( filename, path )
+	return m
+}
+
 func (m *Mailer) Dump() *Mailer {
 	mime, _ := m.builder.Build()
 	defer m.builder.Release( mime )
