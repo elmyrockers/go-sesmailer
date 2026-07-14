@@ -102,10 +102,6 @@ func TestMailer_SendHtmlWithAttachments( t *testing.T ) {
 	// Get image data in bytes
 		catImg, err := os.ReadFile("examples/attachment/cat.webp")
 				require.NoError(t, err, "failed to read cat.webp")
-		rabbitImg, err := os.ReadFile("examples/attachment/rabbit.jpg")
-				require.NoError(t, err, "failed to read rabbit.jpg")
-		dogImg, err := os.ReadFile("examples/attachment/dog.jpg")
-				require.NoError(t, err, "failed to read dog.jpg")
 
 	// Test: add mime headers and body then send
 		subject := fmt.Sprintf("sesmailer integration test - html+attachments - %d", time.Now().UnixNano())
@@ -120,8 +116,8 @@ func TestMailer_SendHtmlWithAttachments( t *testing.T ) {
 							SetBody("<h1>Hello</h1><p>This email has attachments.</p>").AsHTML().
 							SetAltBody("Hello. This is the plain text fallback.").
 							Attach("cat.webp", catImg).
-							Attach("rabbit.jpg", rabbitImg).
-							Attach("dog.jpg", dogImg).
+							AttachFile("rabbit.jpg", "examples/attachment/rabbit.jpg").
+							AttachFile("dog.jpg", "examples/attachment/dog.jpg").
 							Send()
 
 	require.NoError(t, err, "expected Send to succeed")
