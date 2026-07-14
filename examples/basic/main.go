@@ -17,5 +17,4 @@ func main() {
 			SetAltBody("test alt body").
 			Dump().
 			Send()
-		// spew.Dump( mail ).
 }
