@@ -118,7 +118,8 @@ func (m *Mailer) SendWithContext( ctx context.Context ) ( string, error) {
 		if len(m.errorList)>0 { return "", m.errorList[0] }
 
 	// Get MIME as buffer
-		mime, _ := m.builder.Build()
+		mime, err := m.builder.Build()
+		if err != nil { return "", err }
 		defer m.builder.Release( mime )
 
 	// Send email
