@@ -4,9 +4,6 @@
 package sesmailer
 
 import (
-	// "path/filepath"
-	// "context"
-
 	"os"
 	"fmt"
 	"time"
