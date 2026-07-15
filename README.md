@@ -75,9 +75,9 @@ import (
 )
 
 func main() {
-    builder := sesmailer.New()
+    mailer := sesmailer.New()
 
-    messageID, err := builder.SetFrom("no-reply@yourcompany.com", "Your Company").
+    messageID, err := mailer.SetFrom("no-reply@yourcompany.com", "Your Company").
                                 AddTo("helmi@xeno.com.my", "Helmi Aziz").
                                 SetSubject("Test Email").
                                 SetBody("Hello! This is a test email.").
@@ -95,9 +95,9 @@ func main() {
 
 ### 2. Sending HTML Email with Plain Text Fallback:
 ```go
-builder := sesmailer.New()
+mailer := sesmailer.New()
 
-messageID, err := builder.SetFrom("no-reply@yourcompany.com", "Your Company").
+messageID, err := mailer.SetFrom("no-reply@yourcompany.com", "Your Company").
                             AddTo("helmi@xeno.com.my", "Helmi Aziz").
                             SetSubject("HTML Email Example").
                             SetBody("<h1>Hello</h1><p>This is an HTML email.</p>").
@@ -114,9 +114,9 @@ log.Println("Sent! ID:", messageID)
 
 ### 3. Adding CC, BCC, and Reply-To:
 ```go
-builder := sesmailer.New()
+mailer := sesmailer.New()
 
-messageID, err := builder.SetFrom("no-reply@yourcompany.com", "Your Company").
+messageID, err := mailer.SetFrom("no-reply@yourcompany.com", "Your Company").
                             AddTo("helmi@xeno.com.my", "Helmi Aziz").
                             AddCC("admin@yourcompany.com", "Administrator").
                             AddBCC("your-private-email@gmail.com", "").
@@ -143,7 +143,7 @@ import (
 )
 
 func main() {
-    builder := sesmailer.New()
+    mailer := sesmailer.New()
 
     // Read files as attachments
             invoiceFile, err := os.ReadFile("docs/invoice_123.pdf")
@@ -151,20 +151,15 @@ func main() {
                                         log.Fatalf("Failed to read attachment: %v", err)
                                         return
                                     }
-            logoFile, err := os.ReadFile("images/logo.png")
-                                    if err != nil {
-                                        log.Fatalf("Failed to read attachment: %v", err)
-                                        return
-                                    }
 
     // Build MIME header and body, then send
-        messageID, err := builder.SetFrom("no-reply@yourcompany.com", "Your Company").
+        messageID, err := mailer.SetFrom("no-reply@yourcompany.com", "Your Company").
                                     AddTo("helmi@xeno.com.my", "Helmi Aziz").
                                     SetSubject("Email with Attachments").
                                     SetBody("This email will include a few attachments").
                                     
                                     Attach("invoice.pdf", invoiceFile).
-                                    Attach("logo.png", logoFile).
+                                    AttachFile("logo.png", "images/logo.png").
                                     Send()
         if err != nil {
             log.Fatalf("Failed to send email: %v", err)
@@ -176,9 +171,9 @@ func main() {
 
 ### 5. Dump Raw MIME (For Debugging):
 ```go
-builder := sesmailer.New()
+mailer := sesmailer.New()
 
-messageID, err := builder.SetFrom("no-reply@yourcompany.com", "Your Company").
+messageID, err := mailer.SetFrom("no-reply@yourcompany.com", "Your Company").
                             AddTo("helmi@xeno.com.my", "Helmi Aziz").
                             SetSubject("Debug Email").
                             SetBody("This email will show debug info").
