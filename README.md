@@ -208,6 +208,7 @@ log.Println("Sent! ID:", messageID)
 | `AsHTML() *Mailer` | Marks the email content type as `text/html` instead of `text/plain`. |
 | `Embed(name string, data []byte, cid string) *Mailer` | Embeds inline content (e.g. an image) referenced in the HTML body via `cid:` - the image displays inline rather than as a downloadable attachment. |
 | `Attach(filename string, data []byte) *Mailer` | Adds a file attachment from raw bytes. |
+| `AttachFile(filename string, path string) *Mailer` | Adds a file attachment by reading it from disk at the given `path`, using `filename` as the attachment's display name. |
 | `Dump() *Mailer` | Builds the MIME message and prints it to stdout, without sending. Useful for debugging. |
 | `Send() (string, error)` | Sends the email using a default background context. Returns the SES MessageID and any error. |
 | `SendWithContext(ctx context.Context) ( string, error)` | Sends the email using a custom context - useful for timeouts, cancellations, or request tracing. |
