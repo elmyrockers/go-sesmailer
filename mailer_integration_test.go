@@ -184,4 +184,19 @@ func TestMailer_Send_Error( t *testing.T ) {
 			require.Error(t, err, "expected Send to return an error when no headers/recipients are set")
 			assert.Empty(t, messageID, "expected empty messageID when Send fails due to missing headers")
 	})
+
+	t.Run("Build fails due to invalid attachment path", func(t *testing.T) {
+		mailer := New()
+		require.NotNil(t, mailer, "New() should return a non-nil Mailer")
+
+		mailer.SetFrom("noreply@xeno.com.my", "Xeno System")
+		mailer.AddTo("elmyrockers@xeno.com.my", "")
+		mailer.SetSubject("Test Subject")
+		mailer.SetBody("Test Body")
+		mailer.AttachFile("file.pdf", "/path/does/not/exist.pdf") // invalid path forces Build() to error
+
+		messageID, err := mailer.Send()
+		require.Error(t, err, "expected Send to return an error when Build fails due to bad attachment path")
+		assert.Empty(t, messageID, "expected empty messageID when Build fails")
+	})
 }
